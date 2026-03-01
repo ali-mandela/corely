@@ -1,0 +1,174 @@
+<div class="min-h-screen bg-slate-50 p-8">
+  <div class="max-w-6xl mx-auto space-y-16">
+    <!-- Header -->
+    <header class="border-b border-slate-200 pb-8">
+      <h1 class="text-4xl font-bold text-slate-900 tracking-tight">🎨 Corely Design System</h1>
+      <p class="text-slate-500 mt-3 text-lg">
+        Foundation tokens and base components for the Corely Enterprise System.
+      </p>
+    </header>
+
+    <!-- ═══════ COLOR PALETTE ═══════ -->
+    <section>
+      <h2 class="text-2xl font-semibold text-slate-900 mb-6">🖌️ Color Palette</h2>
+
+      <!-- Brand Colors -->
+      <h3 class="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-4">Brand</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-8">
+        <div *ngFor="let c of brandColors" class="group">
+          <div
+            [style.background-color]="c.hex"
+            class="h-20 rounded-xl shadow-sm border border-slate-200 transition-transform group-hover:scale-105"
+          ></div>
+          <p class="mt-2 font-medium text-sm text-slate-800">{{ c.name }}</p>
+          <p class="text-xs text-slate-400 font-mono">{{ c.hex }}</p>
+        </div>
+      </div>
+
+      <!-- Neutral Colors -->
+      <h3 class="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-4">Neutral</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mb-8">
+        <div *ngFor="let c of neutralColors" class="group">
+          <div
+            [style.background-color]="c.hex"
+            class="h-20 rounded-xl shadow-sm border border-slate-200 transition-transform group-hover:scale-105"
+          ></div>
+          <p class="mt-2 font-medium text-sm text-slate-800">{{ c.name }}</p>
+          <p class="text-xs text-slate-400 font-mono">{{ c.hex }}</p>
+        </div>
+      </div>
+
+      <!-- Semantic Colors -->
+      <h3 class="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-4">Semantic</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div *ngFor="let c of semanticColors" class="group">
+          <div
+            [style.background-color]="c.hex"
+            class="h-20 rounded-xl shadow-sm border border-slate-200 transition-transform group-hover:scale-105"
+          ></div>
+          <p class="mt-2 font-medium text-sm text-slate-800">{{ c.name }}</p>
+          <p class="text-xs text-slate-400 font-mono">{{ c.hex }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ TYPOGRAPHY ═══════ -->
+    <section>
+      <h2 class="text-2xl font-semibold text-slate-900 mb-6">🔤 Typography</h2>
+      <div class="bg-white rounded-2xl border border-slate-200 p-8 space-y-8 shadow-sm">
+        <div class="border-b border-slate-100 pb-6">
+          <p class="text-xs text-slate-400 font-mono mb-2">text-4xl · font-bold · tracking-tight</p>
+          <h1 class="text-4xl font-bold tracking-tight text-slate-900 m-0">Heading 1 — Display</h1>
+        </div>
+        <div class="border-b border-slate-100 pb-6">
+          <p class="text-xs text-slate-400 font-mono mb-2">text-2xl · font-semibold</p>
+          <h2 class="text-2xl font-semibold text-slate-900 m-0">Heading 2 — Section Title</h2>
+        </div>
+        <div class="border-b border-slate-100 pb-6">
+          <p class="text-xs text-slate-400 font-mono mb-2">text-xl · font-medium</p>
+          <h3 class="text-xl font-medium text-slate-900 m-0">Heading 3 — Subsection</h3>
+        </div>
+        <div class="border-b border-slate-100 pb-6">
+          <p class="text-xs text-slate-400 font-mono mb-2">
+            text-base · text-slate-600 · leading-7
+          </p>
+          <p class="text-base text-slate-600 leading-7 m-0">
+            Body text — The quick brown fox jumps over the lazy dog. This is our standard reading
+            text used throughout the enterprise system for content and descriptions.
+          </p>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-mono mb-2">text-sm · text-slate-500</p>
+          <p class="text-sm text-slate-500 m-0">
+            Caption text — Used for subsidiary information, timestamps, and metadata.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ SPACING ═══════ -->
+    <section>
+      <div class="flex items-center gap-3 mb-8">
+        <span class="p-2 bg-amber-100 rounded-lg text-amber-600 text-xl font-bold">↔</span>
+        <h2 class="text-2xl font-bold text-slate-900">Spacing System</h2>
+      </div>
+      <div class="bg-white rounded-3xl border border-slate-200 p-10 shadow-sm">
+        <div class="space-y-6">
+          <div *ngFor="let s of spacing" class="flex items-center gap-8">
+            <span
+              class="w-32 text-xs font-mono font-bold text-slate-400 uppercase tracking-tighter"
+              >{{ s.label }}</span
+            >
+            <div class="flex-1 bg-slate-50 rounded-lg p-1">
+              <div
+                [style.width]="s.value"
+                class="h-6 bg-blue-500 rounded-md opacity-40 transition-all hover:opacity-100 cursor-help"
+                [title]="s.px"
+              ></div>
+            </div>
+            <span class="text-xs font-bold text-slate-400 w-12 text-right">{{ s.px }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ BUTTONS ═══════ -->
+    <section class="pb-24">
+      <div class="flex items-center gap-3 mb-8">
+        <span class="p-2 bg-emerald-100 rounded-lg text-emerald-600 text-xl font-bold">🔘</span>
+        <h2 class="text-2xl font-bold text-slate-900">Base Components</h2>
+      </div>
+      <div class="bg-white rounded-3xl border border-dashed border-slate-300 p-12 shadow-sm">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <!-- Action Buttons -->
+          <div class="space-y-8">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">
+              Interactive Buttons
+            </h3>
+            <div class="flex flex-wrap gap-4">
+              <button
+                class="px-8 py-3 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 active:scale-95 transition-all shadow-md shadow-blue-200"
+              >
+                Primary Button
+              </button>
+              <button
+                class="px-8 py-3 border-2 border-slate-200 text-slate-700 text-sm font-bold rounded-xl hover:bg-slate-50 active:scale-95 transition-all"
+              >
+                Secondary
+              </button>
+              <button
+                class="px-8 py-3 bg-slate-100 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-200 active:scale-95 transition-all"
+              >
+                Ghost
+              </button>
+            </div>
+          </div>
+
+          <!-- Semantic Status -->
+          <div class="space-y-8">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">
+              Status Indicators
+            </h3>
+            <div class="flex flex-wrap gap-4">
+              <span
+                class="px-4 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200"
+              >
+                Active Status
+              </span>
+              <span
+                class="px-4 py-1.5 bg-amber-100 text-amber-700 text-xs font-bold rounded-full border border-amber-200"
+              >
+                Pending Review
+              </span>
+              <span
+                class="px-4 py-1.5 bg-red-100 text-red-700 text-xs font-bold rounded-full border border-red-200"
+              >
+                Critical Error
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
