@@ -27,49 +27,65 @@ import { ReportsComponent } from './features/reports/reports';
 import { ProfileComponent } from './features/profile/profile';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, title: 'Login — Corely' },
   {
     path: '',
     component: ShellComponent,
     canActivate: [authGuard],
     children: [
-      { path: 'dashboard', component: DashboardComponent },
-      { path: 'dls', component: DlsComponent },
+      { path: 'dashboard', component: DashboardComponent, title: 'Dashboard — Corely' },
+      { path: 'dls', component: DlsComponent, title: 'Design System — Corely' },
 
-      { path: 'users', component: UsersListComponent },
-      { path: 'users/new', component: UserFormComponent },
-      { path: 'users/:id/edit', component: UserFormComponent },
+      { path: 'users', component: UsersListComponent, title: 'Users — Corely' },
+      { path: 'users/new', component: UserFormComponent, title: 'New User — Corely' },
+      { path: 'users/:id/edit', component: UserFormComponent, title: 'Edit User — Corely' },
 
-      { path: 'items', component: ItemsListComponent },
-      { path: 'items/new', component: ItemFormComponent },
-      { path: 'items/:id/edit', component: ItemFormComponent },
+      { path: 'items', component: ItemsListComponent, title: 'Items — Corely' },
+      { path: 'items/new', component: ItemFormComponent, title: 'New Item — Corely' },
+      { path: 'items/:id/edit', component: ItemFormComponent, title: 'Edit Item — Corely' },
 
-      { path: 'customers', component: CustomersListComponent },
-      { path: 'customers/new', component: CustomerFormComponent },
-      { path: 'customers/:id/edit', component: CustomerFormComponent },
+      { path: 'customers', component: CustomersListComponent, title: 'Customers — Corely' },
+      { path: 'customers/new', component: CustomerFormComponent, title: 'New Customer — Corely' },
+      {
+        path: 'customers/:id/edit',
+        component: CustomerFormComponent,
+        title: 'Edit Customer — Corely',
+      },
 
-      { path: 'vendors', component: VendorsListComponent },
-      { path: 'vendors/new', component: VendorFormComponent },
-      { path: 'vendors/:id/edit', component: VendorFormComponent },
+      { path: 'vendors', component: VendorsListComponent, title: 'Vendors — Corely' },
+      { path: 'vendors/new', component: VendorFormComponent, title: 'New Vendor — Corely' },
+      { path: 'vendors/:id/edit', component: VendorFormComponent, title: 'Edit Vendor — Corely' },
 
-      { path: 'inventory', component: InventoryListComponent },
-      { path: 'inventory/movement', component: StockMovementFormComponent },
-      { path: 'inventory/adjustment', component: StockAdjustmentFormComponent },
-      { path: 'inventory/purchase', component: PurchaseEntryFormComponent },
+      { path: 'inventory', component: InventoryListComponent, title: 'Inventory — Corely' },
+      {
+        path: 'inventory/movement',
+        component: StockMovementFormComponent,
+        title: 'Stock Movement — Corely',
+      },
+      {
+        path: 'inventory/adjustment',
+        component: StockAdjustmentFormComponent,
+        title: 'Stock Adjustment — Corely',
+      },
+      {
+        path: 'inventory/purchase',
+        component: PurchaseEntryFormComponent,
+        title: 'Purchase Entry — Corely',
+      },
 
-      { path: 'pos', component: PosListComponent },
-      { path: 'pos/billing', component: PosBillingComponent },
+      { path: 'pos', component: PosListComponent, title: 'Point of Sale — Corely' },
+      { path: 'pos/billing', component: PosBillingComponent, title: 'POS Billing — Corely' },
 
-      { path: 'invoices', component: InvoicesListComponent },
-      { path: 'invoices/new', component: InvoiceFormComponent },
+      { path: 'invoices', component: InvoicesListComponent, title: 'Invoices — Corely' },
+      { path: 'invoices/new', component: InvoiceFormComponent, title: 'Create Invoice — Corely' },
 
-      { path: 'stores', component: StoresListComponent },
-      { path: 'stores/new', component: StoreFormComponent },
-      { path: 'stores/:id/edit', component: StoreFormComponent },
+      { path: 'stores', component: StoresListComponent, title: 'Stores — Corely' },
+      { path: 'stores/new', component: StoreFormComponent, title: 'New Store — Corely' },
+      { path: 'stores/:id/edit', component: StoreFormComponent, title: 'Edit Store — Corely' },
 
-      { path: 'audit', component: AuditListComponent },
-      { path: 'reports', component: ReportsComponent },
-      { path: 'profile', component: ProfileComponent },
+      { path: 'audit', component: AuditListComponent, title: 'Audit Logs — Corely' },
+      { path: 'reports', component: ReportsComponent, title: 'Reports — Corely' },
+      { path: 'profile', component: ProfileComponent, title: 'Profile — Corely' },
 
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
