@@ -1,0 +1,308 @@
+<div class="p-6 space-y-4 animate-in">
+  <div class="flex items-center gap-3">
+    <a
+      routerLink="/vendors"
+      class="p-1.5 rounded-sm border border-slate-200 hover:bg-slate-50 transition-all text-slate-400 hover:text-slate-600"
+      ><lucide-icon [name]="ArrowLeft" class="w-4 h-4"></lucide-icon
+    ></a>
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">{{ isEdit ? 'Edit Vendor' : 'New Vendor' }}</h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">
+        {{ isEdit ? 'Update supplier details.' : 'Add a new supplier.' }}
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="flex items-center justify-center py-16">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path></svg
+      >Loading...
+    </div>
+  </div>
+
+  <form *ngIf="!loading" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Identity -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Vendor Identity
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Business Name"
+          placeholder="Vendor name"
+          [(ngModel)]="form.name"
+          name="name"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="Display Name"
+          placeholder="Short name"
+          [(ngModel)]="form.display_name"
+          name="display_name"
+        ></app-input>
+        <app-select
+          label="Vendor Type"
+          [(ngModel)]="form.vendor_type"
+          name="vendor_type"
+          [options]="typeOptions"
+        ></app-select>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-input
+          label="Phone"
+          placeholder="+91 9876543210"
+          [(ngModel)]="form.phone"
+          name="phone"
+          type="tel"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="Alt Phone"
+          placeholder="Secondary"
+          [(ngModel)]="form.alt_phone"
+          name="alt_phone"
+          type="tel"
+        ></app-input>
+        <app-input
+          label="Email"
+          placeholder="vendor@email.com"
+          [(ngModel)]="form.email"
+          name="email"
+          type="email"
+        ></app-input>
+        <app-input
+          label="Website"
+          placeholder="www.vendor.com"
+          [(ngModel)]="form.website"
+          name="website"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- GST / Tax -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        GST, Tax & Compliance
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-input
+          label="GSTIN"
+          placeholder="22AAAAA0000A1Z5"
+          [(ngModel)]="form.gstin"
+          name="gstin"
+          hint="15-digit GST"
+        ></app-input>
+        <app-input
+          label="PAN"
+          placeholder="ABCDE1234F"
+          [(ngModel)]="form.pan"
+          name="pan"
+        ></app-input>
+        <app-input
+          label="MSME / Udyam No."
+          placeholder="UDYAM-XX-00-0000000"
+          [(ngModel)]="form.msme_number"
+          name="msme_number"
+        ></app-input>
+        <app-select
+          label="Status"
+          [(ngModel)]="form.status"
+          name="status"
+          [options]="statusOptions"
+        ></app-select>
+      </div>
+      <div class="flex items-center gap-6">
+        <label class="flex items-center gap-2 text-[11px] text-slate-600 cursor-pointer">
+          <input
+            type="checkbox"
+            [(ngModel)]="form.tds_applicable"
+            name="tds_applicable"
+            class="w-3.5 h-3.5 rounded-sm border-slate-300"
+          />
+          TDS Applicable
+        </label>
+        <div *ngIf="form.tds_applicable" class="w-32">
+          <app-input
+            label="TDS Rate %"
+            placeholder="2"
+            [(ngModel)]="form.tds_rate"
+            name="tds_rate"
+            type="number"
+          ></app-input>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment & Credit -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Payment & Logistics
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-select
+          label="Payment Term"
+          [(ngModel)]="form.payment_term"
+          name="payment_term"
+          [options]="paymentOptions"
+        ></app-select>
+        <app-input
+          label="Credit Limit (INR)"
+          placeholder="100000"
+          [(ngModel)]="form.credit_limit"
+          name="credit_limit"
+          type="number"
+        ></app-input>
+        <app-input
+          label="Avg Lead Time (Days)"
+          placeholder="7"
+          [(ngModel)]="form.avg_lead_time_days"
+          name="avg_lead_time_days"
+          type="number"
+        ></app-input>
+        <app-input
+          label="Min Order Value (INR)"
+          placeholder="5000"
+          [(ngModel)]="form.min_order_value"
+          name="min_order_value"
+          type="number"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Bank Details -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Bank Details
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Account Holder"
+          placeholder="Account holder name"
+          [(ngModel)]="form.bank_details.account_holder"
+          name="account_holder"
+        ></app-input>
+        <app-input
+          label="Account Number"
+          placeholder="1234567890"
+          [(ngModel)]="form.bank_details.account_number"
+          name="account_number"
+        ></app-input>
+        <app-input
+          label="Bank Name"
+          placeholder="State Bank of India"
+          [(ngModel)]="form.bank_details.bank_name"
+          name="bank_name"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Branch"
+          placeholder="Branch name"
+          [(ngModel)]="form.bank_details.branch"
+          name="branch"
+        ></app-input>
+        <app-input
+          label="IFSC Code"
+          placeholder="SBIN0001234"
+          [(ngModel)]="form.bank_details.ifsc_code"
+          name="ifsc_code"
+          hint="11-char IFSC"
+        ></app-input>
+        <app-input
+          label="UPI ID"
+          placeholder="vendor@upi"
+          [(ngModel)]="form.bank_details.upi_id"
+          name="upi_id"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Address -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Address
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input
+          label="Address Line 1"
+          placeholder="Street, building"
+          [(ngModel)]="form.address.line1"
+          name="v_line1"
+        ></app-input>
+        <app-input
+          label="Address Line 2"
+          placeholder="Area, locality"
+          [(ngModel)]="form.address.line2"
+          name="v_line2"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-input
+          label="City"
+          placeholder="City"
+          [(ngModel)]="form.address.city"
+          name="v_city"
+        ></app-input>
+        <app-input
+          label="District"
+          placeholder="District"
+          [(ngModel)]="form.address.district"
+          name="v_district"
+        ></app-input>
+        <app-input
+          label="State"
+          placeholder="State"
+          [(ngModel)]="form.address.state"
+          name="v_state"
+        ></app-input>
+        <app-input
+          label="PIN Code"
+          placeholder="600001"
+          [(ngModel)]="form.address.pin_code"
+          name="v_pin"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5">
+      <app-textarea
+        label="Notes"
+        placeholder="Internal notes about this vendor..."
+        [(ngModel)]="form.notes"
+        name="notes"
+        [rows]="2"
+      ></app-textarea>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <app-button type="submit" variant="primary" [loading]="saving" [icon]="Save"
+        >{{ isEdit ? 'Update' : 'Create' }} Vendor</app-button
+      >
+      <a routerLink="/vendors"><app-button variant="secondary" type="button">Cancel</app-button></a>
+    </div>
+  </form>
+</div>

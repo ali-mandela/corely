@@ -1,0 +1,84 @@
+<div
+  class="flex min-h-screen w-full bg-[#f8fafc] font-['Inter'] antialiased text-[#334155] text-sm"
+>
+  <!-- Sidebar -->
+  <aside
+    class="w-56 bg-[#0f172a] text-slate-400 flex-shrink-0 flex flex-col border-r border-slate-800"
+  >
+    <div class="p-4 border-b border-slate-800 flex items-center gap-3 bg-[#020617]">
+      <div class="w-7 h-7 bg-indigo-600 rounded-sm flex items-center justify-center text-white">
+        <lucide-icon [name]="Layers" class="w-4 h-4"></lucide-icon>
+      </div>
+      <span class="text-white font-semibold tracking-tight text-sm">
+        {{ auth.user()?.organization?.name }}
+      </span>
+    </div>
+
+    <nav class="flex-1 p-2 space-y-0.5 overflow-y-auto">
+      <div class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-3 py-2">
+        Modules
+      </div>
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        class="nav-link"
+      >
+        <lucide-icon [name]="item.icon" class="w-4 h-4"></lucide-icon>
+        {{ item.label }}
+      </a>
+    </nav>
+
+    <div class="p-3 border-t border-slate-800 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <a routerLink="/profile">
+          <lucide-icon
+            [name]="Settings"
+            class="w-4 h-4 cursor-pointer hover:text-white transition-colors"
+          ></lucide-icon>
+        </a>
+        <lucide-icon
+          [name]="Bell"
+          class="w-4 h-4 cursor-pointer hover:text-white transition-colors"
+        ></lucide-icon>
+      </div>
+      <button (click)="logout()" class="hover:text-red-400 transition-colors">
+        <lucide-icon [name]="LogOut" class="w-4 h-4"></lucide-icon>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col overflow-hidden">
+    <!-- Top Bar -->
+    <header
+      class="h-10 bg-white border-b border-slate-200 flex items-center justify-between px-6 sticky top-0 z-10"
+    >
+      <div class="flex items-center gap-2 text-[11px] font-medium">
+        <span class="text-slate-400">{{ auth.user()?.organization?.name || 'Corely' }}</span>
+        <span class="text-slate-300">/</span>
+        <span class="text-slate-600">Module</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div
+          class="flex items-center gap-2 px-2 py-0.5 bg-slate-50 border border-slate-200 rounded-sm cursor-pointer hover:bg-slate-100 transition-colors"
+        >
+          <lucide-icon [name]="Search" class="w-3 h-3 text-slate-400"></lucide-icon>
+          <span class="text-[10px] text-slate-400">Search</span>
+        </div>
+        <div
+          class="w-6 h-6 rounded-sm bg-indigo-50 border border-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600"
+        >
+          {{ auth.user()?.name?.charAt(0) || 'U' }}
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <app-toaster></app-toaster>
+</div>

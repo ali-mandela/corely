@@ -1,0 +1,127 @@
+<div class="p-6 space-y-4 animate-in">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">Point of Sale</h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">Sales transactions and billing history.</p>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3 flex-wrap">
+    <div
+      class="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-slate-200 rounded-sm flex-1 max-w-xs"
+    >
+      <lucide-icon [name]="Search" class="w-3.5 h-3.5 text-slate-400"></lucide-icon>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Search by customer, sale ID..."
+        class="flex-1 bg-transparent text-[12px] text-slate-700 outline-none placeholder:text-slate-300"
+      />
+    </div>
+    <select
+      [(ngModel)]="statusFilter"
+      (change)="onSearch()"
+      class="bg-white border border-slate-200 rounded-sm px-2 py-1.5 text-[11px] text-slate-600 outline-none"
+    >
+      <option value="">All Status</option>
+      <option value="completed">Completed</option>
+      <option value="draft">Draft</option>
+      <option value="on_hold">On Hold</option>
+      <option value="cancelled">Cancelled</option>
+      <option value="returned">Returned</option>
+    </select>
+    <span class="text-[11px] text-slate-400">{{ total() }} sales</span>
+  </div>
+
+  <div *ngIf="loading()" class="flex items-center justify-center py-16">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path></svg
+      >Loading...
+    </div>
+  </div>
+
+  <div *ngIf="!loading()" class="bg-white border border-slate-200 rounded-sm overflow-hidden">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-slate-50/80 border-b border-slate-200">
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Sale ID
+          </th>
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Customer
+          </th>
+          <th
+            class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-right"
+          >
+            Total
+          </th>
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Payment
+          </th>
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Status
+          </th>
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Date
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <tr *ngFor="let s of sales()" class="hover:bg-slate-50/50 transition-colors">
+          <td class="px-4 py-2.5 text-[11px] font-mono text-indigo-600">{{ s._id?.slice(-8) }}</td>
+          <td class="px-4 py-2.5 text-[12px] font-medium text-slate-800">
+            {{ s.customer_name || 'Walk-in' }}
+          </td>
+          <td class="px-4 py-2.5 text-[12px] font-bold text-slate-900 text-right">
+            {{ formatCurrency(s.grand_total) }}
+          </td>
+          <td class="px-4 py-2.5 text-[11px] text-slate-500">{{ s.payments?.[0]?.mode || '—' }}</td>
+          <td class="px-4 py-2.5">
+            <app-badge [variant]="getStatusBadge(s.status)">{{ s.status }}</app-badge>
+          </td>
+          <td class="px-4 py-2.5 text-[10px] text-slate-400">
+            {{ s.created_at | date: 'dd MMM, HH:mm' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="sales().length === 0" class="text-center py-12">
+      <p class="text-[13px] text-slate-400 font-medium">No sales recorded yet.</p>
+    </div>
+    <div
+      class="px-4 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-500 font-medium"
+    >
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <div class="flex gap-1">
+        <button
+          (click)="prevPage()"
+          [disabled]="offset === 0"
+          class="px-2 py-1 bg-white border border-slate-200 rounded-sm hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        >
+          <lucide-icon [name]="ChevronLeft" class="w-3 h-3"></lucide-icon>
+        </button>
+        <button
+          (click)="nextPage()"
+          [disabled]="offset + limit >= total()"
+          class="px-2 py-1 bg-white border border-slate-200 rounded-sm hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        >
+          <lucide-icon [name]="ChevronRight" class="w-3 h-3"></lucide-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

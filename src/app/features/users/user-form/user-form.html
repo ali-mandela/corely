@@ -1,0 +1,165 @@
+<div class="p-6 space-y-6 animate-in">
+  <!-- Header -->
+  <div class="flex items-center gap-3">
+    <a
+      routerLink="/users"
+      class="p-1.5 rounded-sm border border-slate-200 hover:bg-slate-50 transition-all text-slate-400 hover:text-slate-600"
+    >
+      <lucide-icon [name]="ArrowLeft" class="w-4 h-4"></lucide-icon>
+    </a>
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">{{ isEdit ? 'Edit User' : 'Create User' }}</h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">
+        {{ isEdit ? 'Update user details and permissions.' : 'Add a new user to the system.' }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="flex items-center justify-center py-16">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      Loading user data...
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form *ngIf="!loading" (ngSubmit)="onSubmit()">
+    <!-- Section: Personal Info -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4 mb-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Personal Information
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Full Name"
+          placeholder="John Doe"
+          [(ngModel)]="form.name"
+          name="name"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="Email"
+          placeholder="john@company.com"
+          [(ngModel)]="form.email"
+          name="email"
+          type="email"
+          [required]="true"
+          [readonly]="isEdit"
+        ></app-input>
+        <app-input
+          label="Phone"
+          placeholder="+91 9876543210"
+          [(ngModel)]="form.phone"
+          name="phone"
+          type="tel"
+          [required]="true"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Section: Credentials -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4 mb-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Credentials
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input
+          label="Username"
+          placeholder="johndoe"
+          [(ngModel)]="form.username"
+          name="username"
+          [readonly]="isEdit"
+          hint="Optional login identifier"
+        ></app-input>
+        <app-input
+          *ngIf="!isEdit"
+          label="Password"
+          placeholder="Min 6 characters"
+          [(ngModel)]="form.password"
+          name="password"
+          type="password"
+          [required]="true"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Section: Role & Access -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4 mb-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Role & Access
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-select
+          label="Role"
+          [(ngModel)]="form.role"
+          name="role"
+          [options]="roleOptions"
+          [required]="true"
+        ></app-select>
+        <app-input
+          label="Designation"
+          placeholder="e.g. Store Manager"
+          [(ngModel)]="form.designation"
+          name="designation"
+          hint="Job title"
+        ></app-input>
+        <app-select
+          *ngIf="isEdit"
+          label="Status"
+          [(ngModel)]="form.is_active"
+          name="is_active"
+          [options]="statusOptions"
+        ></app-select>
+      </div>
+
+      <!-- Permissions -->
+      <div>
+        <label class="text-[10px] font-bold uppercase text-slate-500 tracking-tight block mb-2">
+          Permissions
+          <span class="text-slate-300 normal-case font-normal ml-1">— select applicable</span>
+        </label>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <label
+            *ngFor="let perm of availablePermissions"
+            class="flex items-center gap-2 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-sm cursor-pointer hover:bg-slate-100 transition-colors text-[11px] text-slate-600"
+          >
+            <input
+              type="checkbox"
+              [checked]="form.permissions.includes(perm.value)"
+              (change)="togglePermission(perm.value)"
+              class="w-3.5 h-3.5 rounded-sm border-slate-300 text-indigo-600 focus:ring-indigo-500"
+            />
+            {{ perm.label }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-3">
+      <app-button type="submit" variant="primary" [loading]="saving" [icon]="Save">
+        {{ isEdit ? 'Update User' : 'Create User' }}
+      </app-button>
+      <a routerLink="/users">
+        <app-button variant="secondary" type="button">Cancel</app-button>
+      </a>
+    </div>
+  </form>
+</div>

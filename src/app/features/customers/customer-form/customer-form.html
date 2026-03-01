@@ -1,0 +1,268 @@
+<div class="p-6 space-y-4 animate-in">
+  <div class="flex items-center gap-3">
+    <a
+      routerLink="/customers"
+      class="p-1.5 rounded-sm border border-slate-200 hover:bg-slate-50 transition-all text-slate-400 hover:text-slate-600"
+      ><lucide-icon [name]="ArrowLeft" class="w-4 h-4"></lucide-icon
+    ></a>
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">
+        {{ isEdit ? 'Edit Customer' : 'New Customer' }}
+      </h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">
+        {{ isEdit ? 'Update customer details.' : 'Add a new customer.' }}
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="flex items-center justify-center py-16">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path></svg
+      >Loading...
+    </div>
+  </div>
+
+  <form *ngIf="!loading" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Identity -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Contact Information
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Name"
+          placeholder="Customer name"
+          [(ngModel)]="form.name"
+          name="name"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="Phone"
+          placeholder="+91 9876543210"
+          [(ngModel)]="form.phone"
+          name="phone"
+          type="tel"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="Alt Phone"
+          placeholder="Secondary number"
+          [(ngModel)]="form.alt_phone"
+          name="alt_phone"
+          type="tel"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Email"
+          placeholder="customer@email.com"
+          [(ngModel)]="form.email"
+          name="email"
+          type="email"
+        ></app-input>
+        <app-input
+          label="Company Name"
+          placeholder="Business name"
+          [(ngModel)]="form.company_name"
+          name="company_name"
+        ></app-input>
+        <app-select
+          label="Customer Type"
+          [(ngModel)]="form.customer_type"
+          name="customer_type"
+          [options]="typeOptions"
+        ></app-select>
+      </div>
+    </div>
+
+    <!-- GST & Tax -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        GST & Tax Details
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="GSTIN"
+          placeholder="22AAAAA0000A1Z5"
+          [(ngModel)]="form.gstin"
+          name="gstin"
+          hint="15-digit GST number"
+        ></app-input>
+        <app-input
+          label="PAN"
+          placeholder="ABCDE1234F"
+          [(ngModel)]="form.pan"
+          name="pan"
+          hint="10-char PAN number"
+        ></app-input>
+        <app-select
+          *ngIf="isEdit"
+          label="Status"
+          [(ngModel)]="form.is_active"
+          name="is_active"
+          [options]="statusOptions"
+        ></app-select>
+      </div>
+    </div>
+
+    <!-- Payment -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Credit & Payment
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-select
+          label="Payment Term"
+          [(ngModel)]="form.payment_term"
+          name="payment_term"
+          [options]="paymentOptions"
+        ></app-select>
+        <app-input
+          label="Credit Limit (INR)"
+          placeholder="50000"
+          [(ngModel)]="form.credit_limit"
+          name="credit_limit"
+          type="number"
+          hint="Maximum credit allowed"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Billing Address -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Billing Address
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input
+          label="Address Line 1"
+          placeholder="Street, building"
+          [(ngModel)]="form.billing_address.line1"
+          name="b_line1"
+        ></app-input>
+        <app-input
+          label="Address Line 2"
+          placeholder="Area, locality"
+          [(ngModel)]="form.billing_address.line2"
+          name="b_line2"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-input
+          label="City"
+          placeholder="City"
+          [(ngModel)]="form.billing_address.city"
+          name="b_city"
+        ></app-input>
+        <app-input
+          label="District"
+          placeholder="District"
+          [(ngModel)]="form.billing_address.district"
+          name="b_district"
+        ></app-input>
+        <app-input
+          label="State"
+          placeholder="State"
+          [(ngModel)]="form.billing_address.state"
+          name="b_state"
+        ></app-input>
+        <app-input
+          label="PIN Code"
+          placeholder="600001"
+          [(ngModel)]="form.billing_address.pin_code"
+          name="b_pin"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Shipping Address -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Shipping Address
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input
+          label="Address Line 1"
+          placeholder="Street, building"
+          [(ngModel)]="form.shipping_address.line1"
+          name="s_line1"
+        ></app-input>
+        <app-input
+          label="Address Line 2"
+          placeholder="Area, locality"
+          [(ngModel)]="form.shipping_address.line2"
+          name="s_line2"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-input
+          label="City"
+          placeholder="City"
+          [(ngModel)]="form.shipping_address.city"
+          name="s_city"
+        ></app-input>
+        <app-input
+          label="District"
+          placeholder="District"
+          [(ngModel)]="form.shipping_address.district"
+          name="s_district"
+        ></app-input>
+        <app-input
+          label="State"
+          placeholder="State"
+          [(ngModel)]="form.shipping_address.state"
+          name="s_state"
+        ></app-input>
+        <app-input
+          label="PIN Code"
+          placeholder="600001"
+          [(ngModel)]="form.shipping_address.pin_code"
+          name="s_pin"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5">
+      <app-textarea
+        label="Notes"
+        placeholder="Internal notes about this customer..."
+        [(ngModel)]="form.notes"
+        name="notes"
+        [rows]="2"
+      ></app-textarea>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <app-button type="submit" variant="primary" [loading]="saving" [icon]="Save"
+        >{{ isEdit ? 'Update' : 'Create' }} Customer</app-button
+      >
+      <a routerLink="/customers"
+        ><app-button variant="secondary" type="button">Cancel</app-button></a
+      >
+    </div>
+  </form>
+</div>

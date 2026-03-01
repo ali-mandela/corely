@@ -1,0 +1,148 @@
+<div class="p-6 space-y-4 animate-in">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">Inventory</h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">Stock movements and inventory tracking.</p>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3 flex-wrap">
+    <div
+      class="flex items-center gap-2 px-2.5 py-1.5 bg-white border border-slate-200 rounded-sm flex-1 max-w-xs"
+    >
+      <lucide-icon [name]="Search" class="w-3.5 h-3.5 text-slate-400"></lucide-icon>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        placeholder="Search item name, SKU..."
+        class="flex-1 bg-transparent text-[12px] text-slate-700 outline-none placeholder:text-slate-300"
+      />
+    </div>
+    <select
+      [(ngModel)]="typeFilter"
+      (change)="onSearch()"
+      class="bg-white border border-slate-200 rounded-sm px-2 py-1.5 text-[11px] text-slate-600 outline-none"
+    >
+      <option value="">All Types</option>
+      <option value="stock_in">Stock In</option>
+      <option value="stock_out">Stock Out</option>
+      <option value="adjustment">Adjustment</option>
+      <option value="transfer_in">Transfer In</option>
+      <option value="transfer_out">Transfer Out</option>
+      <option value="return_in">Return In</option>
+      <option value="return_out">Return Out</option>
+    </select>
+    <span class="text-[11px] text-slate-400">{{ total() }} movements</span>
+  </div>
+
+  <div *ngIf="loading()" class="flex items-center justify-center py-16">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path></svg
+      >Loading...
+    </div>
+  </div>
+
+  <div *ngIf="!loading()" class="bg-white border border-slate-200 rounded-sm overflow-hidden">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-slate-50/80 border-b border-slate-200">
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Item
+          </th>
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Type
+          </th>
+          <th
+            class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-right"
+          >
+            Qty
+          </th>
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Reference
+          </th>
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Location
+          </th>
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Reason
+          </th>
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Date
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <tr *ngFor="let m of movements()" class="hover:bg-slate-50/50 transition-colors">
+          <td class="px-4 py-2.5">
+            <div class="text-[12px] font-semibold text-slate-800">{{ m.item_name }}</div>
+            <div *ngIf="m.sku" class="text-[10px] text-slate-400 font-mono">{{ m.sku }}</div>
+          </td>
+          <td class="px-4 py-2.5">
+            <app-badge [variant]="getTypeBadge(m.movement_type)">{{
+              m.movement_type?.replace('_', ' ')
+            }}</app-badge>
+          </td>
+          <td
+            class="px-4 py-2.5 text-[12px] font-bold text-right"
+            [ngClass]="{
+              'text-emerald-600':
+                m.movement_type?.includes('in') || m.movement_type === 'opening_stock',
+              'text-red-600': m.movement_type?.includes('out'),
+            }"
+          >
+            {{ m.movement_type?.includes('in') || m.movement_type === 'opening_stock' ? '+' : '-'
+            }}{{ m.quantity }} {{ m.unit }}
+          </td>
+          <td class="px-4 py-2.5 text-[11px] text-slate-500">{{ m.reference_type || '—' }}</td>
+          <td class="px-4 py-2.5 text-[11px] text-slate-500">
+            {{ m.to_location || m.from_location || '—' }}
+          </td>
+          <td class="px-4 py-2.5 text-[11px] text-slate-500">
+            {{ m.reason?.replace('_', ' ') || '—' }}
+          </td>
+          <td class="px-4 py-2.5 text-[10px] text-slate-400">
+            {{ m.created_at | date: 'dd MMM, HH:mm' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="movements().length === 0" class="text-center py-12">
+      <p class="text-[13px] text-slate-400 font-medium">No stock movements yet.</p>
+    </div>
+    <div
+      class="px-4 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-[10px] text-slate-500 font-medium"
+    >
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <div class="flex gap-1">
+        <button
+          (click)="prevPage()"
+          [disabled]="offset === 0"
+          class="px-2 py-1 bg-white border border-slate-200 rounded-sm hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        >
+          <lucide-icon [name]="ChevronLeft" class="w-3 h-3"></lucide-icon>
+        </button>
+        <button
+          (click)="nextPage()"
+          [disabled]="offset + limit >= total()"
+          class="px-2 py-1 bg-white border border-slate-200 rounded-sm hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+        >
+          <lucide-icon [name]="ChevronRight" class="w-3 h-3"></lucide-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,209 @@
+<div class="p-6 space-y-4 animate-in">
+  <div class="flex items-center gap-3">
+    <a
+      routerLink="/stores"
+      class="p-1.5 rounded-sm border border-slate-200 hover:bg-slate-50 transition-all text-slate-400 hover:text-slate-600"
+      ><lucide-icon [name]="ArrowLeft" class="w-4 h-4"></lucide-icon
+    ></a>
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">{{ isEdit ? 'Edit Store' : 'New Store' }}</h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">
+        {{ isEdit ? 'Update store details.' : 'Register a new location.' }}
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="flex items-center justify-center py-16">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path></svg
+      >Loading...
+    </div>
+  </div>
+
+  <form *ngIf="!loading" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Identity -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Store Details
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Store Name"
+          placeholder="Main Shop"
+          [(ngModel)]="form.name"
+          name="name"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="Store Code"
+          placeholder="MAIN"
+          [(ngModel)]="form.code"
+          name="code"
+          [required]="true"
+          [readonly]="isEdit"
+          hint="Alphanumeric, e.g. BR-01"
+        ></app-input>
+        <app-select
+          label="Store Type"
+          [(ngModel)]="form.store_type"
+          name="store_type"
+          [options]="typeOptions"
+        ></app-select>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-select
+          label="Status"
+          [(ngModel)]="form.status"
+          name="status"
+          [options]="statusOptions"
+        ></app-select>
+        <app-input
+          label="GSTIN"
+          placeholder="If separate registration"
+          [(ngModel)]="form.gstin"
+          name="gstin"
+        ></app-input>
+        <app-input
+          label="Opening Time"
+          placeholder="09:00"
+          [(ngModel)]="form.opening_time"
+          name="opening_time"
+        ></app-input>
+        <app-input
+          label="Closing Time"
+          placeholder="21:00"
+          [(ngModel)]="form.closing_time"
+          name="closing_time"
+        ></app-input>
+      </div>
+      <label class="flex items-center gap-2 text-[11px] text-slate-600 cursor-pointer">
+        <input
+          type="checkbox"
+          [(ngModel)]="form.is_default"
+          name="is_default"
+          class="w-3.5 h-3.5 rounded-sm border-slate-300"
+        />
+        Set as default / primary store
+      </label>
+    </div>
+
+    <!-- Address -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Address
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input
+          label="Address Line 1"
+          placeholder="Street, building"
+          [(ngModel)]="form.address.line1"
+          name="addr_line1"
+        ></app-input>
+        <app-input
+          label="Address Line 2"
+          placeholder="Area, locality"
+          [(ngModel)]="form.address.line2"
+          name="addr_line2"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-input
+          label="City"
+          placeholder="City"
+          [(ngModel)]="form.address.city"
+          name="addr_city"
+        ></app-input>
+        <app-input
+          label="State"
+          placeholder="State"
+          [(ngModel)]="form.address.state"
+          name="addr_state"
+        ></app-input>
+        <app-input
+          label="PIN Code"
+          placeholder="600001"
+          [(ngModel)]="form.address.pin_code"
+          name="addr_pin"
+        ></app-input>
+        <app-input
+          label="Landmark"
+          placeholder="Near..."
+          [(ngModel)]="form.address.landmark"
+          name="addr_landmark"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Contact -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Contact Person
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-input
+          label="Name"
+          placeholder="Manager name"
+          [(ngModel)]="form.contact.name"
+          name="contact_name"
+        ></app-input>
+        <app-input
+          label="Phone"
+          placeholder="+91 9876543210"
+          [(ngModel)]="form.contact.phone"
+          name="contact_phone"
+          type="tel"
+        ></app-input>
+        <app-input
+          label="Email"
+          placeholder="manager@store.com"
+          [(ngModel)]="form.contact.email"
+          name="contact_email"
+          type="email"
+        ></app-input>
+        <app-input
+          label="Role"
+          placeholder="Store Manager"
+          [(ngModel)]="form.contact.role"
+          name="contact_role"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5">
+      <app-textarea
+        label="Notes"
+        placeholder="Internal notes..."
+        [(ngModel)]="form.notes"
+        name="notes"
+        [rows]="2"
+      ></app-textarea>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <app-button type="submit" variant="primary" [loading]="saving" [icon]="Save"
+        >{{ isEdit ? 'Update' : 'Create' }} Store</app-button
+      >
+      <a routerLink="/stores"><app-button variant="secondary" type="button">Cancel</app-button></a>
+    </div>
+  </form>
+</div>

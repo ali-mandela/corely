@@ -1,0 +1,231 @@
+<div class="p-6 space-y-4 animate-in">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">Reports</h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">Business intelligence and analytics.</p>
+    </div>
+    <button
+      (click)="loadAll()"
+      class="p-1.5 rounded-sm border border-slate-200 hover:bg-slate-50 transition-all text-slate-400 hover:text-slate-600"
+    >
+      <lucide-icon [name]="RefreshCw" class="w-4 h-4"></lucide-icon>
+    </button>
+  </div>
+
+  <div *ngIf="loading()" class="flex items-center justify-center py-16">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path></svg
+      >Loading reports...
+    </div>
+  </div>
+
+  <div *ngIf="!loading()" class="space-y-4">
+    <!-- Inventory Valuation -->
+    <div *ngIf="valuation()" class="bg-white border border-slate-200 rounded-sm p-5">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2 mb-4"
+      >
+        Inventory Valuation
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div>
+          <div class="text-[10px] text-slate-400 uppercase">Total Items</div>
+          <div class="text-lg font-bold text-slate-900">{{ valuation().total_items || 0 }}</div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400 uppercase">Stock Units</div>
+          <div class="text-lg font-bold text-slate-900">
+            {{ valuation().total_stock_units || 0 }}
+          </div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400 uppercase">Cost Value</div>
+          <div class="text-lg font-bold text-slate-700">
+            {{ formatCurrency(valuation().cost_value) }}
+          </div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400 uppercase">Retail Value</div>
+          <div class="text-lg font-bold text-indigo-600">
+            {{ formatCurrency(valuation().retail_value) }}
+          </div>
+        </div>
+        <div>
+          <div class="text-[10px] text-slate-400 uppercase">Potential Profit</div>
+          <div class="text-lg font-bold text-emerald-600">
+            {{ formatCurrency(valuation().potential_profit) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- Top Selling Items -->
+      <div class="bg-white border border-slate-200 rounded-sm p-5">
+        <div
+          class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2 mb-3"
+        >
+          Top Selling Items (30 Days)
+        </div>
+        <table class="w-full text-left">
+          <thead>
+            <tr>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5">Item</th>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5 text-right">Qty</th>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5 text-right">
+                Revenue
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of topItems(); let i = index" class="border-t border-slate-50">
+              <td class="py-1.5 text-[11px] text-slate-700">
+                <span class="text-slate-400 mr-1.5">{{ i + 1 }}.</span
+                >{{ item.item_name || item.name }}
+              </td>
+              <td class="py-1.5 text-[11px] text-slate-500 text-right">
+                {{ item.total_qty || item.quantity }}
+              </td>
+              <td class="py-1.5 text-[11px] font-bold text-slate-800 text-right">
+                {{ formatCurrency(item.total_revenue || item.revenue) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p *ngIf="topItems().length === 0" class="text-[11px] text-slate-400 text-center py-4">
+          No sales data yet.
+        </p>
+      </div>
+
+      <!-- Top Customers -->
+      <div class="bg-white border border-slate-200 rounded-sm p-5">
+        <div
+          class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2 mb-3"
+        >
+          Top Customers (90 Days)
+        </div>
+        <table class="w-full text-left">
+          <thead>
+            <tr>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5">Customer</th>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5 text-right">
+                Orders
+              </th>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5 text-right">
+                Amount
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of topCustomers(); let i = index" class="border-t border-slate-50">
+              <td class="py-1.5 text-[11px] text-slate-700">
+                <span class="text-slate-400 mr-1.5">{{ i + 1 }}.</span
+                >{{ c.customer_name || c.name }}
+              </td>
+              <td class="py-1.5 text-[11px] text-slate-500 text-right">
+                {{ c.purchase_count || c.orders }}
+              </td>
+              <td class="py-1.5 text-[11px] font-bold text-slate-800 text-right">
+                {{ formatCurrency(c.total_amount || c.amount) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p *ngIf="topCustomers().length === 0" class="text-[11px] text-slate-400 text-center py-4">
+          No customer data yet.
+        </p>
+      </div>
+
+      <!-- Vendor Dues -->
+      <div class="bg-white border border-slate-200 rounded-sm p-5">
+        <div
+          class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2 mb-3"
+        >
+          Vendor Outstanding Dues
+        </div>
+        <table class="w-full text-left">
+          <thead>
+            <tr>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5">Vendor</th>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5 text-right">
+                Purchases
+              </th>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5 text-right">
+                Outstanding
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of vendorDues()" class="border-t border-slate-50">
+              <td class="py-1.5 text-[11px] text-slate-700">{{ v.vendor_name || v.name }}</td>
+              <td class="py-1.5 text-[11px] text-slate-500 text-right">
+                {{ formatCurrency(v.total_purchases || v.purchases) }}
+              </td>
+              <td class="py-1.5 text-[11px] font-bold text-red-600 text-right">
+                {{ formatCurrency(v.outstanding || v.due) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p *ngIf="vendorDues().length === 0" class="text-[11px] text-slate-400 text-center py-4">
+          No outstanding dues.
+        </p>
+      </div>
+
+      <!-- Low Stock -->
+      <div class="bg-white border border-slate-200 rounded-sm p-5">
+        <div
+          class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2 mb-3"
+        >
+          Low Stock Alerts
+        </div>
+        <table class="w-full text-left">
+          <thead>
+            <tr>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5">Item</th>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5 text-right">
+                Current
+              </th>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5 text-right">
+                Min Level
+              </th>
+              <th class="text-[10px] text-slate-400 font-bold uppercase pb-1.5 text-right">
+                Deficit
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of lowStock()" class="border-t border-slate-50">
+              <td class="py-1.5 text-[11px] text-slate-700">{{ item.name }}</td>
+              <td class="py-1.5 text-[11px] text-red-600 font-bold text-right">
+                {{ item.current_stock }}
+              </td>
+              <td class="py-1.5 text-[11px] text-slate-500 text-right">
+                {{ item.min_stock_level }}
+              </td>
+              <td class="py-1.5 text-[11px] font-bold text-red-600 text-right">
+                -{{ item.deficit }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p *ngIf="lowStock().length === 0" class="text-[11px] text-slate-400 text-center py-4">
+          All items above min stock.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

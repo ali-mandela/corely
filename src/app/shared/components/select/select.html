@@ -1,0 +1,23 @@
+<div class="space-y-1">
+  <label *ngIf="label" class="text-[10px] font-bold uppercase text-slate-500 tracking-tight block">
+    {{ label }}
+    <span *ngIf="required" class="text-red-400 ml-0.5">*</span>
+  </label>
+  <select
+    [value]="value"
+    [disabled]="disabled"
+    (change)="onSelect($event)"
+    (blur)="onBlur()"
+    class="w-full bg-white border rounded-sm px-2.5 py-1.5 text-[12px] text-slate-700 outline-none transition-all duration-200 appearance-none cursor-pointer"
+    [ngClass]="{
+      'border-red-300 focus:border-red-400': error,
+      'border-slate-200 focus:border-indigo-400': !error,
+      'bg-slate-50 text-slate-400 cursor-not-allowed': disabled,
+    }"
+  >
+    <option value="" disabled selected hidden>{{ placeholder }}</option>
+    <option *ngFor="let opt of options" [value]="opt.value">{{ opt.label }}</option>
+  </select>
+  <p *ngIf="error" class="text-[10px] text-red-500 font-medium">{{ error }}</p>
+  <p *ngIf="hint && !error" class="text-[10px] text-slate-400">{{ hint }}</p>
+</div>

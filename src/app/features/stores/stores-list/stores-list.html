@@ -1,0 +1,89 @@
+<div class="p-6 space-y-4 animate-in">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">Stores & Locations</h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">Manage shops, branches, and godowns.</p>
+    </div>
+    <a routerLink="/stores/new"
+      ><app-button variant="primary" [icon]="Plus">Add Store</app-button></a
+    >
+  </div>
+
+  <div *ngIf="loading()" class="flex items-center justify-center py-16">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        ></path></svg
+      >Loading...
+    </div>
+  </div>
+
+  <div *ngIf="!loading()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div
+      *ngFor="let s of stores()"
+      class="bg-white border border-slate-200 rounded-sm p-4 hover:shadow-sm transition-shadow group relative"
+    >
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[13px] font-bold text-slate-900">{{ s.name }}</span>
+            <span
+              *ngIf="s.is_default"
+              class="text-[9px] font-bold bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded-sm uppercase"
+              >Default</span
+            >
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">{{ s.code }}</span>
+        </div>
+        <app-badge [variant]="getStatusBadge(s.status)">{{ s.status }}</app-badge>
+      </div>
+      <div class="space-y-1.5 text-[11px] text-slate-500">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-400 w-12">Type</span
+          ><span class="font-medium text-slate-600">{{ s.store_type }}</span>
+        </div>
+        <div *ngIf="s.address" class="flex items-center gap-2">
+          <span class="text-slate-400 w-12">City</span
+          ><span>{{ s.address.city }}, {{ s.address.state }}</span>
+        </div>
+        <div *ngIf="s.contact" class="flex items-center gap-2">
+          <span class="text-slate-400 w-12">Contact</span
+          ><span>{{ s.contact.name }} · {{ s.contact.phone }}</span>
+        </div>
+      </div>
+      <div
+        class="flex items-center gap-1 mt-3 pt-3 border-t border-slate-100 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <a
+          [routerLink]="['/stores', s._id, 'edit']"
+          class="p-1 rounded-sm hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+          ><lucide-icon [name]="Edit" class="w-3.5 h-3.5"></lucide-icon
+        ></a>
+        <button
+          (click)="deleteStore(s)"
+          class="p-1 rounded-sm hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
+        >
+          <lucide-icon [name]="Trash2" class="w-3.5 h-3.5"></lucide-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="!loading() && stores().length === 0"
+    class="text-center py-12 bg-white border border-slate-200 rounded-sm"
+  >
+    <p class="text-[13px] text-slate-400 font-medium">No stores registered yet.</p>
+  </div>
+</div>

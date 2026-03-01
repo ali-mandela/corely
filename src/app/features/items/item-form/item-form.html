@@ -1,0 +1,309 @@
+<div class="p-6 space-y-4 animate-in">
+  <!-- Header -->
+  <div class="flex items-center gap-3">
+    <a
+      routerLink="/items"
+      class="p-1.5 rounded-sm border border-slate-200 hover:bg-slate-50 transition-all text-slate-400 hover:text-slate-600"
+    >
+      <lucide-icon [name]="ArrowLeft" class="w-4 h-4"></lucide-icon>
+    </a>
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">{{ isEdit ? 'Edit Item' : 'New Item' }}</h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">
+        {{ isEdit ? 'Update product details.' : 'Add a new product to your catalog.' }}
+      </p>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="flex items-center justify-center py-16">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      Loading...
+    </div>
+  </div>
+
+  <form *ngIf="!loading" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Identity -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Product Identity
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Product Name"
+          placeholder="UltraTech PPC Cement 50kg"
+          [(ngModel)]="form.name"
+          name="name"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="SKU"
+          placeholder="CEM-ULT-50"
+          [(ngModel)]="form.sku"
+          name="sku"
+          hint="Auto-generated if blank"
+        ></app-input>
+        <app-input
+          label="Barcode"
+          placeholder="8901234567890"
+          [(ngModel)]="form.barcode"
+          name="barcode"
+        ></app-input>
+      </div>
+      <app-textarea
+        label="Description"
+        placeholder="Product details, specifications..."
+        [(ngModel)]="form.description"
+        name="description"
+        [rows]="2"
+      ></app-textarea>
+    </div>
+
+    <!-- Classification -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Classification
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-select
+          label="Category"
+          [(ngModel)]="form.category"
+          name="category"
+          [options]="categoryOptions"
+          [required]="true"
+        ></app-select>
+        <app-input
+          label="Sub-Category"
+          placeholder="e.g. OPC 53 Grade"
+          [(ngModel)]="form.sub_category"
+          name="sub_category"
+        ></app-input>
+        <app-input
+          label="Brand"
+          placeholder="e.g. UltraTech"
+          [(ngModel)]="form.brand"
+          name="brand"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Manufacturer"
+          placeholder="e.g. Aditya Birla Group"
+          [(ngModel)]="form.manufacturer"
+          name="manufacturer"
+        ></app-input>
+        <app-input
+          label="Model Number"
+          placeholder="e.g. PPC-50-2024"
+          [(ngModel)]="form.model_number"
+          name="model_number"
+        ></app-input>
+        <app-select
+          label="Status"
+          [(ngModel)]="form.status"
+          name="status"
+          [options]="statusOptions"
+        ></app-select>
+      </div>
+    </div>
+
+    <!-- Units -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Units of Measurement
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-select
+          label="Primary Unit"
+          [(ngModel)]="form.unit"
+          name="unit"
+          [options]="unitOptions"
+          [required]="true"
+        ></app-select>
+        <app-select
+          label="Secondary Unit"
+          [(ngModel)]="form.secondary_unit"
+          name="secondary_unit"
+          [options]="unitOptions"
+          placeholder="Optional"
+        ></app-select>
+        <app-input
+          label="Conversion Factor"
+          placeholder="e.g. 50 (1 bag = 50 kg)"
+          [(ngModel)]="form.conversion_factor"
+          name="conversion_factor"
+          type="number"
+        ></app-input>
+      </div>
+      <div class="flex items-center gap-6 pt-1">
+        <label class="flex items-center gap-2 text-[11px] text-slate-600 cursor-pointer">
+          <input
+            type="checkbox"
+            [(ngModel)]="form.is_sellable"
+            name="is_sellable"
+            class="w-3.5 h-3.5 rounded-sm border-slate-300"
+          />
+          Available for POS sale
+        </label>
+        <label class="flex items-center gap-2 text-[11px] text-slate-600 cursor-pointer">
+          <input
+            type="checkbox"
+            [(ngModel)]="form.is_purchasable"
+            name="is_purchasable"
+            class="w-3.5 h-3.5 rounded-sm border-slate-300"
+          />
+          Can be purchased from supplier
+        </label>
+      </div>
+    </div>
+
+    <!-- Pricing -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Pricing & Tax
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-input
+          label="Cost Price"
+          placeholder="0.00"
+          [(ngModel)]="form.pricing.cost_price"
+          name="cost_price"
+          type="number"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="Selling Price"
+          placeholder="0.00"
+          [(ngModel)]="form.pricing.selling_price"
+          name="selling_price"
+          type="number"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="MRP"
+          placeholder="0.00"
+          [(ngModel)]="form.pricing.mrp"
+          name="mrp"
+          type="number"
+        ></app-input>
+        <app-input
+          label="Wholesale Price"
+          placeholder="0.00"
+          [(ngModel)]="form.pricing.wholesale_price"
+          name="wholesale_price"
+          type="number"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-input
+          label="Min Wholesale Qty"
+          placeholder="10"
+          [(ngModel)]="form.pricing.min_wholesale_qty"
+          name="min_wholesale_qty"
+          type="number"
+        ></app-input>
+        <app-select
+          label="GST Slab"
+          [(ngModel)]="form.pricing.tax_rate"
+          name="tax_rate"
+          [options]="taxOptions"
+        ></app-select>
+        <app-input
+          label="HSN Code"
+          placeholder="e.g. 2523"
+          [(ngModel)]="form.pricing.hsn_code"
+          name="hsn_code"
+          hint="For GST filing"
+        ></app-input>
+        <app-input
+          label="Discount %"
+          placeholder="0"
+          [(ngModel)]="form.pricing.discount_percent"
+          name="discount_percent"
+          type="number"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Stock -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Inventory / Stock
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Current Stock"
+          placeholder="0"
+          [(ngModel)]="form.stock.current_stock"
+          name="current_stock"
+          type="number"
+        ></app-input>
+        <app-input
+          label="Min Stock Level"
+          placeholder="Alert threshold"
+          [(ngModel)]="form.stock.min_stock_level"
+          name="min_stock_level"
+          type="number"
+          hint="Alert when below"
+        ></app-input>
+        <app-input
+          label="Reorder Level"
+          placeholder="Reorder trigger"
+          [(ngModel)]="form.stock.reorder_level"
+          name="reorder_level"
+          type="number"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Reorder Qty"
+          placeholder="Default order qty"
+          [(ngModel)]="form.stock.reorder_qty"
+          name="reorder_qty"
+          type="number"
+        ></app-input>
+        <app-input
+          label="Max Stock Level"
+          placeholder="Max capacity"
+          [(ngModel)]="form.stock.max_stock_level"
+          name="max_stock_level"
+          type="number"
+        ></app-input>
+        <app-input
+          label="Storage Location"
+          placeholder="e.g. Rack A-12"
+          [(ngModel)]="form.stock.location"
+          name="stock_location"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-3">
+      <app-button type="submit" variant="primary" [loading]="saving" [icon]="Save">{{
+        isEdit ? 'Update Item' : 'Create Item'
+      }}</app-button>
+      <a routerLink="/items"><app-button variant="secondary" type="button">Cancel</app-button></a>
+    </div>
+  </form>
+</div>

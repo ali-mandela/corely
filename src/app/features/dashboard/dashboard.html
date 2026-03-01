@@ -1,0 +1,160 @@
+<div class="p-6 space-y-6 animate-in">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">Dashboard</h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">Business overview and key metrics.</p>
+    </div>
+    <button
+      (click)="loadDashboard()"
+      class="px-3 py-1.5 text-[11px] font-bold border border-slate-200 rounded-sm text-slate-500 hover:bg-slate-50 transition-all active:translate-y-[0.5px]"
+    >
+      Refresh
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="flex items-center justify-center py-20">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      Loading dashboard...
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div *ngIf="!loading()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <!-- Today Sales -->
+    <div class="bg-white border border-slate-200 rounded-sm p-4 hover:shadow-sm transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[10px] font-bold uppercase text-slate-400 tracking-tight"
+          >Today Sales</span
+        >
+        <div class="w-7 h-7 bg-emerald-50 rounded-sm flex items-center justify-center">
+          <lucide-icon [name]="ShoppingCart" class="w-3.5 h-3.5 text-emerald-500"></lucide-icon>
+        </div>
+      </div>
+      <div class="text-xl font-extrabold text-slate-900">{{ data()?.today?.sales_count || 0 }}</div>
+      <div class="text-[11px] text-slate-400 mt-0.5">transactions today</div>
+    </div>
+
+    <!-- Today Revenue -->
+    <div class="bg-white border border-slate-200 rounded-sm p-4 hover:shadow-sm transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[10px] font-bold uppercase text-slate-400 tracking-tight"
+          >Today Revenue</span
+        >
+        <div class="w-7 h-7 bg-blue-50 rounded-sm flex items-center justify-center">
+          <lucide-icon [name]="DollarSign" class="w-3.5 h-3.5 text-blue-500"></lucide-icon>
+        </div>
+      </div>
+      <div class="text-xl font-extrabold text-slate-900">
+        {{ formatCurrency(data()?.today?.revenue || 0) }}
+      </div>
+      <div class="text-[11px] text-slate-400 mt-0.5">gross revenue</div>
+    </div>
+
+    <!-- Month Revenue -->
+    <div class="bg-white border border-slate-200 rounded-sm p-4 hover:shadow-sm transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[10px] font-bold uppercase text-slate-400 tracking-tight"
+          >This Month</span
+        >
+        <div class="w-7 h-7 bg-indigo-50 rounded-sm flex items-center justify-center">
+          <lucide-icon [name]="TrendingUp" class="w-3.5 h-3.5 text-indigo-500"></lucide-icon>
+        </div>
+      </div>
+      <div class="text-xl font-extrabold text-slate-900">
+        {{ formatCurrency(data()?.this_month?.revenue || 0) }}
+      </div>
+      <div class="text-[11px] text-slate-400 mt-0.5">
+        {{ data()?.this_month?.sales_count || 0 }} sales this month
+      </div>
+    </div>
+
+    <!-- Pending Payments -->
+    <div class="bg-white border border-slate-200 rounded-sm p-4 hover:shadow-sm transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-[10px] font-bold uppercase text-slate-400 tracking-tight"
+          >Pending Dues</span
+        >
+        <div class="w-7 h-7 bg-amber-50 rounded-sm flex items-center justify-center">
+          <lucide-icon [name]="FileText" class="w-3.5 h-3.5 text-amber-500"></lucide-icon>
+        </div>
+      </div>
+      <div class="text-xl font-extrabold text-slate-900">
+        {{ formatCurrency(data()?.pending_payments?.total_due || 0) }}
+      </div>
+      <div class="text-[11px] text-slate-400 mt-0.5">
+        {{ data()?.pending_payments?.count || 0 }} unpaid invoices
+      </div>
+    </div>
+  </div>
+
+  <!-- Low Stock Alerts -->
+  <div
+    *ngIf="!loading() && data()?.low_stock_items?.length"
+    class="bg-white border border-slate-200 rounded-sm"
+  >
+    <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-200">
+      <lucide-icon [name]="AlertTriangle" class="w-4 h-4 text-amber-500"></lucide-icon>
+      <h2 class="text-[12px] font-bold text-slate-900 uppercase tracking-tight">
+        Low Stock Alerts
+      </h2>
+      <app-badge variant="warning" class="ml-auto"
+        >{{ data()?.low_stock_items?.length }} items</app-badge
+      >
+    </div>
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-slate-50/80 border-b border-slate-200">
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Item
+          </th>
+          <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            SKU
+          </th>
+          <th
+            class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-right"
+          >
+            Current
+          </th>
+          <th
+            class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-right"
+          >
+            Min Level
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        <tr
+          *ngFor="let item of data()?.low_stock_items"
+          class="hover:bg-slate-50/50 transition-colors"
+        >
+          <td class="px-4 py-2 text-[12px] font-medium text-slate-700">{{ item.name }}</td>
+          <td class="px-4 py-2 text-[11px] font-mono text-slate-500">{{ item.sku }}</td>
+          <td class="px-4 py-2 text-[12px] font-bold text-red-600 text-right">
+            {{ item.current_stock }}
+          </td>
+          <td class="px-4 py-2 text-[12px] text-slate-500 text-right">{{ item.min_stock }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading() && !data()" class="text-center py-20">
+    <div class="text-slate-300 text-4xl mb-3">📊</div>
+    <p class="text-[13px] text-slate-400 font-medium">No dashboard data available.</p>
+    <p class="text-[11px] text-slate-300 mt-1">Start making sales to populate your dashboard.</p>
+  </div>
+</div>

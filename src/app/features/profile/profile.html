@@ -1,0 +1,107 @@
+<div class="p-6 space-y-4 animate-in">
+  <div>
+    <h1 class="text-lg font-bold text-slate-900">My Profile</h1>
+    <p class="text-[11px] text-slate-400 mt-0.5">Manage your account details and password.</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Profile Info -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        <lucide-icon [name]="UserIcon" class="w-3.5 h-3.5"></lucide-icon>
+        Profile Information
+      </div>
+      <div class="space-y-3">
+        <app-input
+          label="Full Name"
+          placeholder="Your name"
+          [(ngModel)]="profile.name"
+          name="p_name"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="Email"
+          [ngModel]="profile.email"
+          name="p_email"
+          type="email"
+          [readonly]="true"
+          hint="Cannot be changed"
+        ></app-input>
+        <app-input
+          label="Phone"
+          placeholder="+91 9876543210"
+          [(ngModel)]="profile.phone"
+          name="p_phone"
+          type="tel"
+        ></app-input>
+        <div class="grid grid-cols-2 gap-3">
+          <app-input
+            label="Role"
+            [ngModel]="profile.role"
+            name="p_role"
+            [readonly]="true"
+          ></app-input>
+          <app-input
+            label="Designation"
+            [ngModel]="profile.designation"
+            name="p_designation"
+            [readonly]="true"
+          ></app-input>
+        </div>
+      </div>
+      <app-button
+        variant="primary"
+        [loading]="savingProfile"
+        [icon]="Save"
+        (click)="updateProfile()"
+        >Save Changes</app-button
+      >
+    </div>
+
+    <!-- Change Password -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        <lucide-icon [name]="Lock" class="w-3.5 h-3.5"></lucide-icon>
+        Change Password
+      </div>
+      <div class="space-y-3">
+        <app-input
+          label="Current Password"
+          placeholder="Enter current password"
+          [(ngModel)]="password.current_password"
+          name="pw_current"
+          type="password"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="New Password"
+          placeholder="Min 8 characters"
+          [(ngModel)]="password.new_password"
+          name="pw_new"
+          type="password"
+          [required]="true"
+          hint="Must include uppercase, lowercase, and digit"
+        ></app-input>
+        <app-input
+          label="Confirm Password"
+          placeholder="Re-enter new password"
+          [(ngModel)]="password.confirm_password"
+          name="pw_confirm"
+          type="password"
+          [required]="true"
+        ></app-input>
+      </div>
+      <app-button
+        variant="primary"
+        [loading]="savingPassword"
+        [icon]="Lock"
+        (click)="changePassword()"
+        >Update Password</app-button
+      >
+    </div>
+  </div>
+</div>
