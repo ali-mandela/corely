@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, ChevronLeft, ChevronRight, FileText } from 'lucide-angular';
 import { ApiService } from '../../../core/services/api.service';
@@ -19,7 +20,7 @@ interface Invoice {
 @Component({
   selector: 'app-invoices-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, BadgeComponent],
+  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule, BadgeComponent],
   templateUrl: './invoices-list.html',
   styles: [
     `

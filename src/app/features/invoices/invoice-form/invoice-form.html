@@ -1,0 +1,289 @@
+<div class="p-6 space-y-4 animate-in">
+  <div class="flex items-center gap-3">
+    <a
+      routerLink="/invoices"
+      class="p-1.5 rounded-sm border border-slate-200 hover:bg-slate-50 transition-all text-slate-400 hover:text-slate-600"
+      ><lucide-icon [name]="ArrowLeft" class="w-4 h-4"></lucide-icon
+    ></a>
+    <div>
+      <h1 class="text-lg font-bold text-slate-900">Create Invoice</h1>
+      <p class="text-[11px] text-slate-400 mt-0.5">GST-compliant invoice generator.</p>
+    </div>
+  </div>
+
+  <form (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Invoice Type & Status -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Invoice Details
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-select
+          label="Invoice Type"
+          [(ngModel)]="invoiceType"
+          name="inv_type"
+          [options]="typeOptions"
+        ></app-select>
+        <app-select
+          label="GST Type"
+          [(ngModel)]="gstType"
+          name="gst_type"
+          [options]="gstTypeOptions"
+        ></app-select>
+        <app-select
+          label="Status"
+          [(ngModel)]="status"
+          name="status"
+          [options]="statusOptions"
+        ></app-select>
+      </div>
+    </div>
+
+    <!-- Buyer -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Buyer Details
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <app-input
+          label="Name"
+          placeholder="Buyer name"
+          [(ngModel)]="buyer.name"
+          name="b_name"
+          [required]="true"
+        ></app-input>
+        <app-input
+          label="GSTIN"
+          placeholder="15-digit GSTIN"
+          [(ngModel)]="buyer.gstin"
+          name="b_gstin"
+        ></app-input>
+        <app-input
+          label="PAN"
+          placeholder="ABCDE1234F"
+          [(ngModel)]="buyer.pan"
+          name="b_pan"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <app-input
+          label="Address"
+          placeholder="Address line"
+          [(ngModel)]="buyer.address"
+          name="b_addr"
+        ></app-input>
+        <app-input
+          label="City"
+          placeholder="City"
+          [(ngModel)]="buyer.city"
+          name="b_city"
+        ></app-input>
+        <app-input
+          label="State"
+          placeholder="State"
+          [(ngModel)]="buyer.state"
+          name="b_state"
+        ></app-input>
+        <app-input
+          label="PIN"
+          placeholder="600001"
+          [(ngModel)]="buyer.pin_code"
+          name="b_pin"
+        ></app-input>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input
+          label="Phone"
+          placeholder="+91 9876543210"
+          [(ngModel)]="buyer.phone"
+          name="b_phone"
+          type="tel"
+        ></app-input>
+        <app-input
+          label="Email"
+          placeholder="buyer@email.com"
+          [(ngModel)]="buyer.email"
+          name="b_email"
+          type="email"
+        ></app-input>
+      </div>
+    </div>
+
+    <!-- Line Items -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Line Items</div>
+        <button
+          type="button"
+          (click)="addLine()"
+          class="flex items-center gap-1 text-[11px] text-indigo-600 font-bold hover:text-indigo-700 transition-colors"
+        >
+          <lucide-icon [name]="Plus" class="w-3.5 h-3.5"></lucide-icon> Add Item
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[700px]">
+          <thead>
+            <tr class="border-b border-slate-200">
+              <th class="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-400">
+                Description
+              </th>
+              <th class="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-400">HSN</th>
+              <th class="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-400 w-16">Qty</th>
+              <th class="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-400 w-14">Unit</th>
+              <th class="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-400 w-24">Rate</th>
+              <th class="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-400 w-16">GST%</th>
+              <th class="px-2 py-1.5 text-[10px] font-bold uppercase text-slate-400 text-right">
+                Total
+              </th>
+              <th class="w-8"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of items(); let i = index" class="border-b border-slate-50">
+              <td class="px-1 py-1">
+                <input
+                  type="text"
+                  [(ngModel)]="item.description"
+                  [name]="'desc_' + i"
+                  placeholder="Item / service"
+                  class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-sm text-[11px] outline-none"
+                />
+              </td>
+              <td class="px-1 py-1">
+                <input
+                  type="text"
+                  [(ngModel)]="item.hsn_code"
+                  [name]="'hsn_' + i"
+                  placeholder="HSN"
+                  class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-sm text-[11px] outline-none"
+                />
+              </td>
+              <td class="px-1 py-1">
+                <input
+                  type="number"
+                  [(ngModel)]="item.quantity"
+                  [name]="'qty_' + i"
+                  (ngModelChange)="recalcLine(i)"
+                  min="1"
+                  class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-sm text-[11px] outline-none text-center"
+                />
+              </td>
+              <td class="px-1 py-1">
+                <input
+                  type="text"
+                  [(ngModel)]="item.unit"
+                  [name]="'unit_' + i"
+                  class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-sm text-[11px] outline-none"
+                />
+              </td>
+              <td class="px-1 py-1">
+                <input
+                  type="number"
+                  [(ngModel)]="item.unit_price"
+                  [name]="'rate_' + i"
+                  (ngModelChange)="recalcLine(i)"
+                  min="0"
+                  class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-sm text-[11px] outline-none"
+                />
+              </td>
+              <td class="px-1 py-1">
+                <input
+                  type="number"
+                  [(ngModel)]="item.gst_rate"
+                  [name]="'gst_' + i"
+                  (ngModelChange)="recalcLine(i)"
+                  min="0"
+                  max="28"
+                  class="w-full px-2 py-1 bg-slate-50 border border-slate-200 rounded-sm text-[11px] outline-none text-center"
+                />
+              </td>
+              <td
+                class="px-1 py-1 text-[12px] font-bold text-slate-800 text-right whitespace-nowrap"
+              >
+                {{ formatCurrency(item.line_total) }}
+              </td>
+              <td class="px-1 py-1">
+                <button
+                  type="button"
+                  (click)="removeLine(i)"
+                  [disabled]="items().length <= 1"
+                  class="p-0.5 rounded-sm hover:bg-red-50 text-slate-300 hover:text-red-500 disabled:opacity-20 transition-colors"
+                >
+                  <lucide-icon [name]="Trash2" class="w-3.5 h-3.5"></lucide-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex justify-end pt-2 border-t border-slate-100">
+        <div class="space-y-1 text-[12px] text-right">
+          <div class="flex justify-between gap-8">
+            <span class="text-slate-400">Subtotal</span
+            ><span class="text-slate-700">{{ formatCurrency(subtotal()) }}</span>
+          </div>
+          <div class="flex justify-between gap-8">
+            <span class="text-slate-400">Total Tax</span
+            ><span class="text-slate-700">{{ formatCurrency(totalTax()) }}</span>
+          </div>
+          <div class="flex justify-between gap-8 pt-1 border-t border-slate-100">
+            <span class="font-bold text-slate-900">Grand Total</span
+            ><span class="font-bold text-indigo-600">{{ formatCurrency(grandTotal()) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terms & Notes -->
+    <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4">
+      <div
+        class="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2"
+      >
+        Additional Details
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <app-input
+          label="Payment Terms"
+          placeholder="Net 30, Advance, etc."
+          [(ngModel)]="paymentTerms"
+          name="pay_terms"
+        ></app-input>
+        <app-input
+          label="Due Date"
+          placeholder="YYYY-MM-DD"
+          [(ngModel)]="dueDate"
+          name="due_date"
+          type="date"
+        ></app-input>
+      </div>
+      <app-textarea
+        label="Notes"
+        placeholder="Internal notes..."
+        [(ngModel)]="notes"
+        name="notes"
+        [rows]="2"
+      ></app-textarea>
+      <app-textarea
+        label="Terms & Conditions"
+        placeholder="Payment terms, warranty, etc."
+        [(ngModel)]="termsAndConditions"
+        name="tnc"
+        [rows]="3"
+      ></app-textarea>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <app-button type="submit" variant="primary" [loading]="saving" [icon]="Save"
+        >Create Invoice</app-button
+      >
+      <a routerLink="/invoices"
+        ><app-button variant="secondary" type="button">Cancel</app-button></a
+      >
+    </div>
+  </form>
+</div>

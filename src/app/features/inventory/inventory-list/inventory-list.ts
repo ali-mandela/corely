@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
   LucideAngularModule,
@@ -31,7 +32,7 @@ interface StockMovement {
 @Component({
   selector: 'app-inventory-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, BadgeComponent],
+  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule, BadgeComponent],
   templateUrl: './inventory-list.html',
   styles: [
     `

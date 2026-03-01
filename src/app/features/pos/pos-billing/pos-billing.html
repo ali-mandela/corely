@@ -1,0 +1,308 @@
+<div class="h-full flex animate-in">
+  <!-- LEFT: Items Search + Cart -->
+  <div class="flex-1 flex flex-col border-r border-slate-200 overflow-hidden">
+    <!-- Search Bar -->
+    <div class="p-4 border-b border-slate-200 bg-white">
+      <div class="relative">
+        <div
+          class="flex items-center gap-2 px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm"
+        >
+          <lucide-icon [name]="Search" class="w-4 h-4 text-slate-400"></lucide-icon>
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (input)="onSearch()"
+            (focus)="onSearch()"
+            placeholder="Search items by name, SKU, barcode..."
+            class="flex-1 bg-transparent text-[13px] text-slate-700 outline-none placeholder:text-slate-300"
+            autofocus
+          />
+        </div>
+        <!-- Search Results Dropdown -->
+        <div
+          *ngIf="showResults()"
+          class="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-sm shadow-lg z-20 max-h-64 overflow-y-auto"
+        >
+          <div *ngIf="searching()" class="p-3 text-center text-[11px] text-slate-400">
+            Searching...
+          </div>
+          <div
+            *ngIf="!searching() && searchResults().length === 0"
+            class="p-3 text-center text-[11px] text-slate-400"
+          >
+            No items found.
+          </div>
+          <button
+            *ngFor="let item of searchResults()"
+            (click)="addToCart(item)"
+            class="w-full px-3 py-2 flex items-center justify-between hover:bg-indigo-50 transition-colors text-left border-b border-slate-50 last:border-0"
+          >
+            <div>
+              <div class="text-[12px] font-semibold text-slate-800">{{ item.name }}</div>
+              <div class="text-[10px] text-slate-400 font-mono">
+                {{ item.sku || '—' }} · Stock: {{ item.current_stock ?? '—' }}
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-[12px] font-bold text-slate-900">
+                {{ formatCurrency(item.selling_price || 0) }}
+              </div>
+              <div class="text-[9px] text-slate-400">GST {{ item.gst_slab || 18 }}%</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Items -->
+    <div class="flex-1 overflow-y-auto bg-slate-50/50">
+      <div
+        *ngIf="cart().length === 0"
+        class="flex flex-col items-center justify-center h-full text-slate-300"
+      >
+        <lucide-icon [name]="ShoppingCart" class="w-12 h-12 mb-2"></lucide-icon>
+        <p class="text-[13px] font-medium">Cart is empty</p>
+        <p class="text-[11px]">Search and add items above</p>
+      </div>
+      <table *ngIf="cart().length > 0" class="w-full text-left">
+        <thead class="sticky top-0 bg-white border-b border-slate-200">
+          <tr>
+            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              #
+            </th>
+            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Item
+            </th>
+            <th
+              class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-center"
+            >
+              Qty
+            </th>
+            <th
+              class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-right"
+            >
+              Price
+            </th>
+            <th
+              class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-right"
+            >
+              GST
+            </th>
+            <th
+              class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 text-right"
+            >
+              Total
+            </th>
+            <th
+              class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400"
+            ></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <tr *ngFor="let item of cart(); let i = index" class="bg-white hover:bg-slate-50/50">
+            <td class="px-4 py-2 text-[11px] text-slate-400">{{ i + 1 }}</td>
+            <td class="px-4 py-2">
+              <div class="text-[12px] font-semibold text-slate-800">{{ item.item_name }}</div>
+              <div class="text-[10px] text-slate-400">{{ item.sku || '' }} · {{ item.unit }}</div>
+            </td>
+            <td class="px-4 py-2">
+              <div class="flex items-center justify-center gap-1">
+                <button
+                  (click)="updateQty(item, item.quantity - 1)"
+                  class="w-6 h-6 rounded-sm bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                >
+                  <lucide-icon [name]="Minus" class="w-3 h-3 text-slate-600"></lucide-icon>
+                </button>
+                <span class="w-8 text-center text-[12px] font-bold text-slate-900">{{
+                  item.quantity
+                }}</span>
+                <button
+                  (click)="updateQty(item, item.quantity + 1)"
+                  class="w-6 h-6 rounded-sm bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                >
+                  <lucide-icon [name]="Plus" class="w-3 h-3 text-slate-600"></lucide-icon>
+                </button>
+              </div>
+            </td>
+            <td class="px-4 py-2 text-[11px] text-slate-600 text-right">
+              {{ formatCurrency(item.unit_price) }}
+            </td>
+            <td class="px-4 py-2 text-[10px] text-slate-400 text-right">
+              {{ item.gst_rate }}%<br />{{ formatCurrency(item.gst_amount) }}
+            </td>
+            <td class="px-4 py-2 text-[12px] font-bold text-slate-900 text-right">
+              {{ formatCurrency(item.line_total) }}
+            </td>
+            <td class="px-4 py-2 text-right">
+              <button
+                (click)="removeItem(item)"
+                class="p-1 rounded-sm hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors"
+              >
+                <lucide-icon [name]="Trash2" class="w-3.5 h-3.5"></lucide-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RIGHT: Summary Panel -->
+  <div class="w-80 flex flex-col bg-white">
+    <!-- Customer -->
+    <div class="p-4 border-b border-slate-100 space-y-2">
+      <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        Customer (Optional)
+      </div>
+      <input
+        type="text"
+        [(ngModel)]="customerName"
+        placeholder="Customer name"
+        class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-sm text-[12px] text-slate-700 outline-none placeholder:text-slate-300"
+      />
+      <input
+        type="text"
+        [(ngModel)]="customerPhone"
+        placeholder="Phone number"
+        class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-sm text-[12px] text-slate-700 outline-none placeholder:text-slate-300"
+      />
+    </div>
+
+    <!-- Bill Discount -->
+    <div class="p-4 border-b border-slate-100 space-y-2">
+      <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Bill Discount</div>
+      <div class="flex gap-2">
+        <select
+          [(ngModel)]="billDiscountType"
+          class="bg-slate-50 border border-slate-200 rounded-sm px-2 py-1.5 text-[11px] text-slate-600 outline-none"
+        >
+          <option value="flat">₹ Flat</option>
+          <option value="percentage">% Percent</option>
+        </select>
+        <input
+          type="number"
+          [(ngModel)]="billDiscountValue"
+          placeholder="0"
+          min="0"
+          class="flex-1 px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-sm text-[12px] text-slate-700 outline-none"
+        />
+      </div>
+    </div>
+
+    <!-- Totals -->
+    <div class="p-4 flex-1 space-y-2">
+      <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">
+        Bill Summary
+      </div>
+      <div class="space-y-1.5 text-[12px]">
+        <div class="flex justify-between">
+          <span class="text-slate-500">Items</span
+          ><span class="font-medium text-slate-700">{{ itemCount() }} items</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Subtotal</span
+          ><span class="text-slate-700">{{ formatCurrency(subtotal()) }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">GST</span
+          ><span class="text-slate-700">{{ formatCurrency(totalTax()) }}</span>
+        </div>
+        <div *ngIf="totalDiscount() > 0" class="flex justify-between">
+          <span class="text-emerald-600">Discount</span
+          ><span class="text-emerald-600">-{{ formatCurrency(totalDiscount()) }}</span>
+        </div>
+        <div class="border-t border-slate-200 pt-2 mt-2 flex justify-between">
+          <span class="text-[14px] font-bold text-slate-900">Grand Total</span>
+          <span class="text-[16px] font-bold text-indigo-600">{{
+            formatCurrency(grandTotal())
+          }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="p-4 border-t border-slate-200 space-y-2">
+      <button
+        (click)="openPayment()"
+        [disabled]="cart().length === 0"
+        class="w-full py-2.5 bg-indigo-600 text-white text-[13px] font-bold rounded-sm hover:bg-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+      >
+        <lucide-icon [name]="CreditCard" class="w-4 h-4"></lucide-icon>
+        Pay {{ formatCurrency(grandTotal()) }}
+      </button>
+      <div class="flex gap-2">
+        <button
+          (click)="holdSale()"
+          [disabled]="cart().length === 0"
+          class="flex-1 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 text-[11px] font-bold rounded-sm hover:bg-amber-100 disabled:opacity-30 transition-all"
+        >
+          Hold Bill
+        </button>
+        <button
+          (click)="clearCart()"
+          [disabled]="cart().length === 0"
+          class="flex-1 py-1.5 bg-slate-50 text-slate-500 border border-slate-200 text-[11px] font-bold rounded-sm hover:bg-slate-100 disabled:opacity-30 transition-all"
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal Overlay -->
+  <div
+    *ngIf="showPayment()"
+    class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center animate-in"
+    (click)="showPayment.set(false)"
+  >
+    <div
+      (click)="$event.stopPropagation()"
+      class="bg-white rounded-sm shadow-xl w-96 p-6 space-y-4"
+    >
+      <div class="flex items-center justify-between">
+        <h2 class="text-[14px] font-bold text-slate-900">Complete Payment</h2>
+        <button (click)="showPayment.set(false)" class="p-1 hover:bg-slate-100 rounded-sm">
+          <lucide-icon [name]="X" class="w-4 h-4 text-slate-400"></lucide-icon>
+        </button>
+      </div>
+      <div class="text-center py-3 bg-slate-50 rounded-sm">
+        <div class="text-[10px] text-slate-400 uppercase">Total Payable</div>
+        <div class="text-2xl font-bold text-indigo-600">{{ formatCurrency(grandTotal()) }}</div>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block"
+            >Payment Mode</label
+          >
+          <select
+            [(ngModel)]="paymentMode"
+            class="w-full bg-slate-50 border border-slate-200 rounded-sm px-3 py-2 text-[12px] text-slate-700 outline-none"
+          >
+            <option *ngFor="let o of paymentOptions" [value]="o.value">{{ o.label }}</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[10px] font-bold uppercase text-slate-400 mb-1 block"
+            >Amount Received</label
+          >
+          <input
+            type="number"
+            [(ngModel)]="amountReceived"
+            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-sm text-[14px] font-bold text-slate-900 outline-none"
+          />
+        </div>
+        <div *ngIf="changeDue() > 0" class="text-center py-2 bg-emerald-50 rounded-sm">
+          <div class="text-[10px] text-emerald-600 uppercase">Change Due</div>
+          <div class="text-lg font-bold text-emerald-700">{{ formatCurrency(changeDue()) }}</div>
+        </div>
+      </div>
+      <button
+        (click)="completeSale()"
+        [disabled]="processing()"
+        class="w-full py-2.5 bg-emerald-600 text-white text-[13px] font-bold rounded-sm hover:bg-emerald-700 disabled:opacity-50 transition-all"
+      >
+        {{ processing() ? 'Processing...' : 'Complete Sale' }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search, ChevronLeft, ChevronRight, Eye } from 'lucide-angular';
 import { ApiService } from '../../../core/services/api.service';
@@ -18,7 +19,7 @@ interface Sale {
 @Component({
   selector: 'app-pos-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, LucideAngularModule, BadgeComponent],
+  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule, BadgeComponent],
   templateUrl: './pos-list.html',
   styles: [
     `

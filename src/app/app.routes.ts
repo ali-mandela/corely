@@ -13,8 +13,13 @@ import { CustomerFormComponent } from './features/customers/customer-form/custom
 import { VendorsListComponent } from './features/vendors/vendors-list/vendors-list';
 import { VendorFormComponent } from './features/vendors/vendor-form/vendor-form';
 import { InventoryListComponent } from './features/inventory/inventory-list/inventory-list';
+import { StockMovementFormComponent } from './features/inventory/stock-movement-form/stock-movement-form';
+import { StockAdjustmentFormComponent } from './features/inventory/stock-adjustment-form/stock-adjustment-form';
+import { PurchaseEntryFormComponent } from './features/inventory/purchase-entry-form/purchase-entry-form';
 import { PosListComponent } from './features/pos/pos-list/pos-list';
+import { PosBillingComponent } from './features/pos/pos-billing/pos-billing';
 import { InvoicesListComponent } from './features/invoices/invoices-list/invoices-list';
+import { InvoiceFormComponent } from './features/invoices/invoice-form/invoice-form';
 import { StoresListComponent } from './features/stores/stores-list/stores-list';
 import { StoreFormComponent } from './features/stores/store-form/store-form';
 import { AuditListComponent } from './features/audit/audit-list/audit-list';
@@ -48,8 +53,15 @@ export const routes: Routes = [
       { path: 'vendors/:id/edit', component: VendorFormComponent },
 
       { path: 'inventory', component: InventoryListComponent },
+      { path: 'inventory/movement', component: StockMovementFormComponent },
+      { path: 'inventory/adjustment', component: StockAdjustmentFormComponent },
+      { path: 'inventory/purchase', component: PurchaseEntryFormComponent },
+
       { path: 'pos', component: PosListComponent },
+      { path: 'pos/billing', component: PosBillingComponent },
+
       { path: 'invoices', component: InvoicesListComponent },
+      { path: 'invoices/new', component: InvoiceFormComponent },
 
       { path: 'stores', component: StoresListComponent },
       { path: 'stores/new', component: StoreFormComponent },
