@@ -90,7 +90,7 @@
       </thead>
       <tbody class="divide-y divide-slate-100">
         <tr *ngFor="let s of sales()" class="hover:bg-slate-50/50 transition-colors">
-          <td class="px-4 py-2.5 text-[11px] font-mono text-indigo-600">{{ s._id?.slice(-8) }}</td>
+          <td class="px-4 py-2.5 text-[11px] font-mono text-indigo-600">{{ s._id.slice(-8) }}</td>
           <td class="px-4 py-2.5 text-[12px] font-medium text-slate-800">
             {{ s.customer_name || 'Walk-in' }}
           </td>

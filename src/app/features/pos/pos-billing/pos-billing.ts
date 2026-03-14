@@ -81,16 +81,7 @@ interface Customer {
 @Component({
   selector: 'app-pos-billing',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    LucideAngularModule,
-    BadgeComponent,
-    ButtonComponent,
-    InputComponent,
-    SelectComponent,
-    SaleReceiptComponent
-],
+  imports: [CommonModule, FormsModule, LucideAngularModule, SaleReceiptComponent],
   templateUrl: './pos-billing.html',
   styles: [
     `

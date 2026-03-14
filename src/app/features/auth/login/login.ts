@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -46,16 +46,26 @@ export class LoginComponent {
   constructor(
     private auth: AuthService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
-  
+
+  clearError(): void {
+    if (this.error) {
+      this.error = '';
+    }
+  }
+
   useDemo(): void {
     this.slug = 'corely-demo';
     this.identifier = 'admin@corely.io';
     this.password = 'Password@123';
+    this.error = '';
   }
 
   async onSubmit(): Promise<void> {
-    if (!this.identifier || !this.password || !this.slug) {
+    if (this.loading) return;
+
+    if (!this.slug || !this.identifier || !this.password) {
       this.error = 'All fields are required.';
       return;
     }
@@ -71,9 +81,12 @@ export class LoginComponent {
       });
       this.router.navigate(['/dashboard']);
     } catch (err: any) {
-      this.error = err.message || 'Authentication failed. Please check your credentials.';
+      this.error = err?.message || 'Authentication failed. Please check your credentials.';
+      this.loading = false;
+      this.cdr.detectChanges();
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 }

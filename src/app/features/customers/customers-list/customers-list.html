@@ -102,7 +102,7 @@
             <app-badge [variant]="getTypeBadge(c.customer_type)">{{ c.customer_type }}</app-badge>
           </td>
           <td class="px-4 py-2.5 text-[11px] text-slate-600">
-            {{ c.payment_term?.replace('_', ' ') }}
+            {{ c.payment_term.replace('_', ' ') }}
           </td>
           <td
             class="px-4 py-2.5 text-[12px] text-right"

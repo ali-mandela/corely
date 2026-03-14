@@ -110,18 +110,18 @@
           </td>
           <td class="px-4 py-2.5">
             <app-badge [variant]="getTypeBadge(m.movement_type)">{{
-              m.movement_type?.replace('_', ' ')
+              m.movement_type.replace('_', ' ')
             }}</app-badge>
           </td>
           <td
             class="px-4 py-2.5 text-[12px] font-bold text-right"
             [ngClass]="{
               'text-emerald-600':
-                m.movement_type?.includes('in') || m.movement_type === 'opening_stock',
-              'text-red-600': m.movement_type?.includes('out'),
+                m.movement_type.includes('in') || m.movement_type === 'opening_stock',
+              'text-red-600': m.movement_type.includes('out'),
             }"
           >
-            {{ m.movement_type?.includes('in') || m.movement_type === 'opening_stock' ? '+' : '-'
+            {{ m.movement_type.includes('in') || m.movement_type === 'opening_stock' ? '+' : '-'
             }}{{ m.quantity }} {{ m.unit }}
           </td>
           <td class="px-4 py-2.5 text-[11px] text-slate-500">{{ m.reference_type || '—' }}</td>

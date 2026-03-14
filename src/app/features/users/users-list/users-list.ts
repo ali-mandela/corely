@@ -32,15 +32,7 @@ interface User {
 @Component({
   selector: 'app-users-list',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    FormsModule,
-    LucideAngularModule,
-    BadgeComponent,
-    InputComponent,
-    ButtonComponent,
-  ],
+  imports: [CommonModule, RouterModule, FormsModule, LucideAngularModule, BadgeComponent, ButtonComponent],
   templateUrl: './users-list.html',
   styles: [
     `

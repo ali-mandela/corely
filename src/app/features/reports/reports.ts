@@ -11,14 +11,12 @@ import {
   RefreshCw,
 } from 'lucide-angular';
 
-import { BadgeComponent } from '../../shared/components/badge/badge';
-import { ButtonComponent } from '../../shared/components/button/button';
 import { ApiService } from '../../core/services/api.service';
 
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule, BadgeComponent, ButtonComponent],
+  imports: [CommonModule, LucideAngularModule],
   templateUrl: './reports.html',
   styles: [
     `

@@ -1,14 +1,15 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { Router } from '@angular/router';
 import { ToasterService } from '../../shared/components/toaster/toaster.service';
 import { AuthService } from '../services/auth.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toaster = inject(ToasterService);
-  const router = inject(Router);
   const auth = inject(AuthService);
+
+  // Determine if this request is the login endpoint
+  const isLoginRequest = req.url.includes('/auth/login');
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
@@ -24,8 +25,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         } else {
           message = String(err.error.detail);
         }
-      } else if (err.statusText) {
-        message = err.statusText;
+      } else if (err.message) {
+        message = err.message;
       }
 
       switch (err.status) {
@@ -34,14 +35,20 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           toaster.error(message);
           break;
         case 401:
-          auth.logout();
-          toaster.error('Session expired or unauthorized. Please sign in again.');
+          // Do NOT auto-logout when the login request itself returns 401
+          // (wrong credentials — user should stay on the login page)
+          if (!isLoginRequest) {
+            auth.logout();
+            toaster.error('Session expired or unauthorized. Please sign in again.');
+          }
           break;
         case 403:
           toaster.warning('You do not have permission for this action.');
           break;
         case 404:
-          toaster.warning('The requested resource was not found.');
+          if (!isLoginRequest) {
+            toaster.warning('The requested resource was not found.');
+          }
           break;
         case 422:
           toaster.warning(message);
@@ -50,10 +57,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           toaster.error('Server error. Please try again later.');
           break;
         default:
-          toaster.error(message);
+          if (!isLoginRequest) {
+            toaster.error(message);
+          }
       }
 
-      return throwError(() => err);
+      // Re-throw as a plain Error so callers can read err.message cleanly
+      return throwError(() => new Error(message));
     }),
   );
 };
