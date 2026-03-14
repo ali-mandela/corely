@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import {
   LucideAngularModule,
   LayoutDashboard,
@@ -98,11 +98,15 @@ export class ShellComponent {
     { label: 'POS', icon: this.ShoppingCart, route: '/pos' },
     { label: 'Invoices', icon: this.FileText, route: '/invoices' },
     { label: 'Stores', icon: this.Store, route: '/stores' },
-    { label: 'Audit Logs', icon: this.Shield, route: '/audit' },
+    { label: 'Audit', icon: this.Shield, route: '/audit' },
     { label: 'Reports', icon: this.BarChart3, route: '/reports' },
   ];
 
-  constructor(public auth: AuthService) {}
+  constructor(public auth: AuthService, private router: Router) {}
+
+  getModuleName() {
+    return this.router.url.split('/')[1];
+  }
 
   logout(): void {
     this.auth.logout();

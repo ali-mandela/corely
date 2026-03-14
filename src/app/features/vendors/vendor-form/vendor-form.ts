@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -50,8 +50,8 @@ export class VendorFormComponent implements OnInit {
   readonly Save = Save;
   isEdit = false;
   vendorId = '';
-  loading = false;
-  saving = false;
+  loading = signal(false);
+  saving = signal(false);
 
   form: any = {
     name: '',
@@ -140,7 +140,7 @@ export class VendorFormComponent implements OnInit {
   }
 
   loadVendor(): void {
-    this.loading = true;
+    this.loading.set(true);
     this.api.get<any>(`/vendors/${this.vendorId}`).subscribe({
       next: (r) => {
         if (r.success && r.data) {
@@ -168,9 +168,9 @@ export class VendorFormComponent implements OnInit {
             notes: d.notes || '',
           };
         }
-        this.loading = false;
+        this.loading.set(false);
       },
-      error: () => (this.loading = false),
+      error: () => this.loading.set(false),
     });
   }
 
@@ -179,7 +179,7 @@ export class VendorFormComponent implements OnInit {
       this.toaster.warning('Name and phone are required.');
       return;
     }
-    this.saving = true;
+    this.saving.set(true);
 
     if (this.isEdit) {
       this.api.put(`/vendors/${this.vendorId}`, this.form).subscribe({
@@ -187,7 +187,7 @@ export class VendorFormComponent implements OnInit {
           this.toaster.success('Vendor updated.');
           this.router.navigate(['/vendors']);
         },
-        error: () => (this.saving = false),
+        error: () => this.saving.set(false),
       });
     } else {
       this.api.post('/vendors', this.form).subscribe({
@@ -195,7 +195,7 @@ export class VendorFormComponent implements OnInit {
           this.toaster.success('Vendor created.');
           this.router.navigate(['/vendors']);
         },
-        error: () => (this.saving = false),
+        error: () => this.saving.set(false),
       });
     }
   }

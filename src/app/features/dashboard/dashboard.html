@@ -7,7 +7,7 @@
         <span *ngIf="orgName()">{{ orgName() }}</span>
         <span *ngIf="orgName() && userRole()"> · </span>
         <span *ngIf="userRole()" class="capitalize">{{ userRole() }}</span>
-        <span> · {{ 'today' | date: 'EEEE, dd MMMM yyyy' }}</span>
+        <span> · {{ today | date: 'EEEE, dd MMMM yyyy' }}</span>
       </p>
     </div>
     <button

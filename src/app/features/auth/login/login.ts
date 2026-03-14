@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LucideAngularModule, Layers } from 'lucide-angular';
+import { LucideAngularModule, Layers, Info } from 'lucide-angular';
 import { InputComponent } from '../../../shared/components/input/input';
 import { ButtonComponent } from '../../../shared/components/button/button';
 import { AuthService } from '../../../core/services/auth.service';
@@ -35,6 +35,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class LoginComponent {
   readonly Layers = Layers;
+  readonly Info = Info;
 
   identifier = '';
   password = '';
@@ -46,6 +47,12 @@ export class LoginComponent {
     private auth: AuthService,
     private router: Router,
   ) {}
+  
+  useDemo(): void {
+    this.slug = 'corely-demo';
+    this.identifier = 'admin@corely.io';
+    this.password = 'Password@123';
+  }
 
   async onSubmit(): Promise<void> {
     if (!this.identifier || !this.password || !this.slug) {

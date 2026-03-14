@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -49,8 +49,8 @@ export class UserFormComponent implements OnInit {
 
   isEdit = false;
   userId = '';
-  loading = false;
-  saving = false;
+  loading = signal(false);
+  saving = signal(false);
 
   form: {
     name: string;
@@ -122,7 +122,7 @@ export class UserFormComponent implements OnInit {
   }
 
   loadUser(): void {
-    this.loading = true;
+    this.loading.set(true);
     this.api.get<any>(`/users/${this.userId}`).subscribe({
       next: (res) => {
         if (res.success && res.data) {
@@ -139,9 +139,9 @@ export class UserFormComponent implements OnInit {
             permissions: u.permissions || [],
           };
         }
-        this.loading = false;
+        this.loading.set(false);
       },
-      error: () => (this.loading = false),
+      error: () => this.loading.set(false),
     });
   }
 
@@ -160,7 +160,7 @@ export class UserFormComponent implements OnInit {
       return;
     }
 
-    this.saving = true;
+    this.saving.set(true);
     const payload: any = { ...this.form, is_active: String(this.form.is_active) === 'true' };
 
     if (this.isEdit) {
@@ -172,12 +172,12 @@ export class UserFormComponent implements OnInit {
           this.toaster.success('User updated successfully.');
           this.router.navigate(['/users']);
         },
-        error: () => (this.saving = false),
+        error: () => this.saving.set(false),
       });
     } else {
       if (!this.form.password) {
         this.toaster.warning('Password is required for new users.');
-        this.saving = false;
+        this.saving.set(false);
         return;
       }
       this.api.post('/users', payload).subscribe({
@@ -185,7 +185,7 @@ export class UserFormComponent implements OnInit {
           this.toaster.success('User created successfully.');
           this.router.navigate(['/users']);
         },
-        error: () => (this.saving = false),
+        error: () => this.saving.set(false),
       });
     }
   }

@@ -16,8 +16,16 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       if (err.error?.error?.message) {
         message = err.error.error.message;
-      } else if (err.message) {
-        message = err.message;
+      } else if (err.error?.detail) {
+        if (Array.isArray(err.error.detail)) {
+          message = err.error.detail
+            .map((d: any) => `${d.loc?.[d.loc.length - 1] || 'Error'}: ${d.msg}`)
+            .join('; ');
+        } else {
+          message = String(err.error.detail);
+        }
+      } else if (err.statusText) {
+        message = err.statusText;
       }
 
       switch (err.status) {
@@ -26,8 +34,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           toaster.error(message);
           break;
         case 401:
-          toaster.error('Session expired. Please sign in again.');
           auth.logout();
+          toaster.error('Session expired or unauthorized. Please sign in again.');
           break;
         case 403:
           toaster.warning('You do not have permission for this action.');
@@ -36,7 +44,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           toaster.warning('The requested resource was not found.');
           break;
         case 422:
-          toaster.error(message);
+          toaster.warning(message);
           break;
         case 500:
           toaster.error('Server error. Please try again later.');

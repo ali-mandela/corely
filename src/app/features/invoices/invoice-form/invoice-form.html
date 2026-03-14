@@ -278,7 +278,7 @@
     </div>
 
     <div class="flex items-center gap-3">
-      <app-button type="submit" variant="primary" [loading]="saving" [icon]="Save"
+      <app-button type="submit" variant="primary" [loading]="saving()" [icon]="Save"
         >Create Invoice</app-button
       >
       <a routerLink="/invoices"

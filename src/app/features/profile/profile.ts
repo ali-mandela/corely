@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, User, Lock, Save } from 'lucide-angular';
@@ -41,8 +41,8 @@ export class ProfileComponent implements OnInit {
   readonly Lock = Lock;
   readonly Save = Save;
 
-  savingProfile = false;
-  savingPassword = false;
+  savingProfile = signal(false);
+  savingPassword = signal(false);
 
   profile = { name: '', phone: '', email: '', role: '', designation: '' };
   password = { current_password: '', new_password: '', confirm_password: '' };
@@ -71,13 +71,13 @@ export class ProfileComponent implements OnInit {
       this.toaster.warning('Name is required.');
       return;
     }
-    this.savingProfile = true;
+    this.savingProfile.set(true);
     this.api.put('/profile/me', { name: this.profile.name, phone: this.profile.phone }).subscribe({
       next: () => {
         this.toaster.success('Profile updated.');
-        this.savingProfile = false;
+        this.savingProfile.set(false);
       },
-      error: () => (this.savingProfile = false),
+      error: () => this.savingProfile.set(false),
     });
   }
 
@@ -94,14 +94,14 @@ export class ProfileComponent implements OnInit {
       this.toaster.warning('Passwords do not match.');
       return;
     }
-    this.savingPassword = true;
+    this.savingPassword.set(true);
     this.api.post('/profile/change-password', this.password).subscribe({
       next: () => {
         this.toaster.success('Password changed successfully.');
         this.password = { current_password: '', new_password: '', confirm_password: '' };
-        this.savingPassword = false;
+        this.savingPassword.set(false);
       },
-      error: () => (this.savingPassword = false),
+      error: () => this.savingPassword.set(false),
     });
   }
 }

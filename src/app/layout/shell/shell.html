@@ -16,7 +16,7 @@
 
     <nav class="flex-1 p-2 space-y-0.5 overflow-y-auto">
       <div class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-3 py-2">
-        Modules
+        {{ getModuleName() }}
       </div>
       <a
         *ngFor="let item of navItems"

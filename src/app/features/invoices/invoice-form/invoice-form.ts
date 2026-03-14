@@ -62,7 +62,7 @@ export class InvoiceFormComponent {
   readonly Save = Save;
   readonly Plus = Plus;
   readonly Trash2 = Trash2;
-  saving = false;
+  saving = signal(false);
 
   invoiceType = 'tax_invoice';
   gstType = 'cgst_sgst';
@@ -169,7 +169,7 @@ export class InvoiceFormComponent {
       this.toaster.warning('Buyer name is required.');
       return;
     }
-    this.saving = true;
+    this.saving.set(true);
 
     const payload: any = {
       invoice_type: this.invoiceType,
@@ -191,7 +191,7 @@ export class InvoiceFormComponent {
         this.toaster.success('Invoice created.');
         this.router.navigate(['/invoices']);
       },
-      error: () => (this.saving = false),
+      error: () => this.saving.set(false),
     });
   }
 

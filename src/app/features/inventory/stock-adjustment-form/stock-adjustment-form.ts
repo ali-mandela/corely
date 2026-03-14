@@ -56,7 +56,7 @@ export class StockAdjustmentFormComponent implements OnInit {
   readonly ArrowLeft = ArrowLeft;
   readonly Save = Save;
   readonly Search = Search;
-  saving = false;
+  saving = signal(false);
 
   itemSearch = '';
   allItems = signal<Product[]>([]);
@@ -141,13 +141,13 @@ export class StockAdjustmentFormComponent implements OnInit {
       this.toaster.warning('Select an item and enter quantity.');
       return;
     }
-    this.saving = true;
+    this.saving.set(true);
     this.api.post('/inventory/adjustments', this.form).subscribe({
       next: () => {
         this.toaster.success('Stock adjusted.');
         this.router.navigate(['/inventory']);
       },
-      error: () => (this.saving = false),
+      error: () => this.saving.set(false),
     });
   }
 }

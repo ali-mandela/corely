@@ -74,8 +74,9 @@ export class DashboardComponent implements OnInit {
   readonly Boxes = Boxes;
   readonly ArrowRight = ArrowRight;
 
-  loading = signal(true);
+  loading = signal(false);
   data = signal<DashboardData | null>(null);
+  today = new Date();
 
   greeting = computed(() => {
     const h = new Date().getHours();

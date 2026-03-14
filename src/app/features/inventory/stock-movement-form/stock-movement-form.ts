@@ -57,7 +57,7 @@ export class StockMovementFormComponent implements OnInit {
   readonly ArrowLeft = ArrowLeft;
   readonly Save = Save;
   readonly Search = Search;
-  saving = false;
+  saving = signal(false);
 
   // Item picker
   itemSearch = '';
@@ -155,7 +155,7 @@ export class StockMovementFormComponent implements OnInit {
       this.toaster.warning('Select an item and enter quantity.');
       return;
     }
-    this.saving = true;
+    this.saving.set(true);
     this.api
       .post('/inventory/movements', { ...this.form, reason: this.form.reason || undefined })
       .subscribe({
@@ -163,7 +163,7 @@ export class StockMovementFormComponent implements OnInit {
           this.toaster.success('Stock movement recorded.');
           this.router.navigate(['/inventory']);
         },
-        error: () => (this.saving = false),
+        error: () => this.saving.set(false),
       });
   }
 }

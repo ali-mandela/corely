@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -51,8 +51,8 @@ export class ItemFormComponent implements OnInit {
 
   isEdit = false;
   itemId = '';
-  loading = false;
-  saving = false;
+  loading = signal(false);
+  saving = signal(false);
 
   form: any = {
     name: '',
@@ -173,7 +173,7 @@ export class ItemFormComponent implements OnInit {
   }
 
   loadItem(): void {
-    this.loading = true;
+    this.loading.set(true);
     this.api.get<any>(`/items/${this.itemId}`).subscribe({
       next: (res) => {
         if (res.success && res.data) {
@@ -198,9 +198,9 @@ export class ItemFormComponent implements OnInit {
             is_purchasable: d.is_purchasable ?? true,
           };
         }
-        this.loading = false;
+        this.loading.set(false);
       },
-      error: () => (this.loading = false),
+      error: () => this.loading.set(false),
     });
   }
 
@@ -209,7 +209,7 @@ export class ItemFormComponent implements OnInit {
       this.toaster.warning('Name and category are required.');
       return;
     }
-    this.saving = true;
+    this.saving.set(true);
     const payload = { ...this.form };
 
     if (this.isEdit) {
@@ -218,7 +218,7 @@ export class ItemFormComponent implements OnInit {
           this.toaster.success('Item updated.');
           this.router.navigate(['/items']);
         },
-        error: () => (this.saving = false),
+        error: () => this.saving.set(false),
       });
     } else {
       this.api.post('/items', payload).subscribe({
@@ -226,7 +226,7 @@ export class ItemFormComponent implements OnInit {
           this.toaster.success('Item created.');
           this.router.navigate(['/items']);
         },
-        error: () => (this.saving = false),
+        error: () => this.saving.set(false),
       });
     }
   }

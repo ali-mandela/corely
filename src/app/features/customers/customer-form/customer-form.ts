@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -50,8 +50,8 @@ export class CustomerFormComponent implements OnInit {
   readonly Save = Save;
   isEdit = false;
   customerId = '';
-  loading = false;
-  saving = false;
+  loading = signal(false);
+  saving = signal(false);
 
   form: any = {
     name: '',
@@ -134,7 +134,7 @@ export class CustomerFormComponent implements OnInit {
   }
 
   loadCustomer(): void {
-    this.loading = true;
+    this.loading.set(true);
     this.api.get<any>(`/customers/${this.customerId}`).subscribe({
       next: (r) => {
         if (r.success && r.data) {
@@ -156,9 +156,9 @@ export class CustomerFormComponent implements OnInit {
             shipping_address: { ...this.form.shipping_address, ...(d.shipping_address || {}) },
           };
         }
-        this.loading = false;
+        this.loading.set(false);
       },
-      error: () => (this.loading = false),
+      error: () => this.loading.set(false),
     });
   }
 
@@ -167,7 +167,7 @@ export class CustomerFormComponent implements OnInit {
       this.toaster.warning('Name and phone are required.');
       return;
     }
-    this.saving = true;
+    this.saving.set(true);
     const payload = { ...this.form, is_active: String(this.form.is_active) === 'true' };
 
     if (this.isEdit) {
@@ -176,7 +176,7 @@ export class CustomerFormComponent implements OnInit {
           this.toaster.success('Customer updated.');
           this.router.navigate(['/customers']);
         },
-        error: () => (this.saving = false),
+        error: () => this.saving.set(false),
       });
     } else {
       this.api.post('/customers', payload).subscribe({
@@ -184,7 +184,7 @@ export class CustomerFormComponent implements OnInit {
           this.toaster.success('Customer created.');
           this.router.navigate(['/customers']);
         },
-        error: () => (this.saving = false),
+        error: () => this.saving.set(false),
       });
     }
   }

@@ -77,7 +77,7 @@ export class PurchaseEntryFormComponent implements OnInit {
   readonly Plus = Plus;
   readonly Trash2 = Trash2;
   readonly Search = Search;
-  saving = false;
+  saving = signal(false);
 
   allItems = signal<Product[]>([]);
   supplier = { name: '', gstin: '', phone: '', email: '', state: '' };
@@ -206,7 +206,7 @@ export class PurchaseEntryFormComponent implements OnInit {
       this.toaster.warning('Add at least one item.');
       return;
     }
-    this.saving = true;
+    this.saving.set(true);
     const payload = {
       supplier: this.supplier,
       invoice_number: this.invoiceNumber || undefined,
@@ -226,7 +226,7 @@ export class PurchaseEntryFormComponent implements OnInit {
         this.toaster.success('Purchase entry created.');
         this.router.navigate(['/inventory']);
       },
-      error: () => (this.saving = false),
+      error: () => this.saving.set(false),
     });
   }
 

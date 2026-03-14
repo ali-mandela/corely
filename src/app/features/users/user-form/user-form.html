@@ -16,7 +16,7 @@
   </div>
 
   <!-- Loading -->
-  <div *ngIf="loading" class="flex items-center justify-center py-16">
+  <div *ngIf="loading()" class="flex items-center justify-center py-16">
     <div class="flex items-center gap-2 text-slate-400 text-[12px]">
       <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
         <circle
@@ -34,7 +34,7 @@
   </div>
 
   <!-- Form -->
-  <form *ngIf="!loading" (ngSubmit)="onSubmit()">
+  <form *ngIf="!loading()" (ngSubmit)="onSubmit()">
     <!-- Section: Personal Info -->
     <div class="bg-white border border-slate-200 rounded-sm p-5 space-y-4 mb-4">
       <div
@@ -154,7 +154,7 @@
 
     <!-- Actions -->
     <div class="flex items-center gap-3">
-      <app-button type="submit" variant="primary" [loading]="saving" [icon]="Save">
+      <app-button type="submit" variant="primary" [loading]="saving()" [icon]="Save">
         {{ isEdit ? 'Update User' : 'Create User' }}
       </app-button>
       <a routerLink="/users">

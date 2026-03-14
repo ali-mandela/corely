@@ -53,7 +53,7 @@
       </div>
       <app-button
         variant="primary"
-        [loading]="savingProfile"
+        [loading]="savingProfile()"
         [icon]="Save"
         (click)="updateProfile()"
         >Save Changes</app-button
@@ -97,7 +97,7 @@
       </div>
       <app-button
         variant="primary"
-        [loading]="savingPassword"
+        [loading]="savingPassword()"
         [icon]="Lock"
         (click)="changePassword()"
         >Update Password</app-button
