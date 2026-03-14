@@ -1,105 +1,100 @@
-<div class="min-h-screen bg-[#f8fafc] flex items-center justify-center font-['Inter'] antialiased">
-  <div class="w-full max-w-sm animate-in">
-    <!-- Logo -->
-    <div class="flex items-center justify-center gap-3 mb-8">
-      <div
-        class="w-9 h-9 bg-[#0f172a] rounded-sm flex items-center justify-center text-white shadow-lg"
-      >
-        <lucide-icon [name]="Layers" class="w-5 h-5"></lucide-icon>
+<div class="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6 font-['Inter'] antialiased">
+  <div class="flex flex-col lg:flex-row items-center justify-center gap-12 sm:gap-16 w-full max-w-5xl animate-in">
+    
+    <!-- Login Column -->
+    <div class="w-full max-w-sm">
+      <!-- Logo -->
+      <div class="flex items-center justify-center gap-3 mb-10">
+        <div class="w-10 h-10 bg-[#0f172a] rounded-lg flex items-center justify-center text-white shadow-lg">
+          <lucide-icon [name]="Layers" class="w-6 h-6"></lucide-icon>
+        </div>
+        <span class="text-xl font-bold text-[#0f172a] tracking-tight">Corely ERP</span>
       </div>
-      <span class="text-xl font-bold text-[#0f172a] tracking-tight">Corely ERP</span>
+
+      <div class="mb-6 bg-slate-50 border border-slate-200 rounded-md p-4 text-[11px] text-slate-500 italic leading-relaxed">
+        "Please let us know in case you are facing any issue and want to use the system"
+        <br />
+        <a href="mailto:resposive.developers@gmail.com" class="text-indigo-600 font-bold hover:underline transition-all">resposive.developers@gmail.com</a>
+      </div>
+
+      <!-- Login Card -->
+      <div class="bg-white border border-slate-200 rounded-lg p-8 shadow-xs border-b-2 border-b-slate-300/50">
+        <div class="mb-8">
+          <h1 class="text-lg font-bold text-slate-900 tracking-tight">Sign in</h1>
+          <p class="text-[12px] text-slate-400 mt-1">
+            Enter your credentials to access the system.
+          </p>
+        </div>
+
+        <!-- Error -->
+        <div *ngIf="error" class="mb-6 px-4 py-2 bg-red-50 border border-red-100 rounded-md text-[11px] font-semibold text-red-600 animate-in">
+          {{ error }}
+        </div>
+
+        <form (ngSubmit)="onSubmit()" class="space-y-5">
+          <app-input
+            label="Organization"
+            placeholder="e.g. acme-corp"
+            [(ngModel)]="slug"
+            name="slug"
+            [required]="true"
+            hint="Your organization slug"
+          ></app-input>
+
+          <app-input
+            label="Email or Phone"
+            placeholder="admin@acme.com"
+            [(ngModel)]="identifier"
+            name="identifier"
+            type="email"
+            [required]="true"
+          ></app-input>
+
+          <app-input
+            label="Password"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+            name="password"
+            type="password"
+            [required]="true"
+          ></app-input>
+
+          <div class="pt-2">
+            <app-button variant="primary" type="submit" [loading]="loading" class="w-full">
+              Sign In
+            </app-button>
+          </div>
+        </form>
+      </div>
+
+      <p class="text-center text-[10px] text-slate-400 mt-8 tracking-widest uppercase font-semibold">Corely Enterprise System • v1.0</p>
     </div>
 
-    <div
-      class="mb-5 bg-slate-50 border border-slate-200 rounded-sm p-3 text-[10px] text-slate-500 italic"
-    >
-      "Please let us know in case you are facing any issue and want to use the system"
-      <br />
-      resposive.developers@gmail.com
-    </div>
-
-    <!-- Login Card -->
-    <div class="bg-white border border-slate-200 rounded-sm p-6 shadow-sm">
-      <div class="mb-6">
-        <h1 class="text-lg font-bold text-slate-900">Sign in</h1>
-        <p class="text-[12px] text-slate-400 mt-0.5">
-          Enter your credentials to access the system.
-        </p>
-      </div>
-
-      <!-- Error -->
-      <div
-        *ngIf="error"
-        class="mb-4 px-3 py-2 bg-red-50 border border-red-100 rounded-sm text-[11px] font-medium text-red-600"
-      >
-        {{ error }}
-      </div>
-
-      <form (ngSubmit)="onSubmit()" class="space-y-4">
-        <app-input
-          label="Organization"
-          placeholder="e.g. acme-corp"
-          [(ngModel)]="slug"
-          name="slug"
-          [required]="true"
-          hint="Your organization slug"
-        ></app-input>
-
-        <app-input
-          label="Email or Phone"
-          placeholder="admin@acme.com"
-          [(ngModel)]="identifier"
-          name="identifier"
-          type="email"
-          [required]="true"
-        ></app-input>
-
-        <app-input
-          label="Password"
-          placeholder="••••••••"
-          [(ngModel)]="password"
-          name="password"
-          type="password"
-          [required]="true"
-        ></app-input>
-
-        <app-button variant="primary" type="submit" [loading]="loading" class="w-full">
-          Sign In
-        </app-button>
-      </form>
-    </div>
-
-    <p class="text-center text-[10px] text-slate-400 mt-4">Corely Enterprise System v1.0</p>
-  </div>
-
-  <!-- Demo Credentials -->
-  <div
-    class="mb-5 ml-12 bg-indigo-50 border border-indigo-100 rounded-sm p-4 animate-in"
-    style="animation-delay: 0.1s"
-  >
-    <div class="flex items-start gap-3">
-      <div class="mt-0.5">
-        <lucide-icon [name]="Info" class="w-4 h-4 text-indigo-500"></lucide-icon>
-      </div>
-      <div class="flex-1">
-        <h2 class="text-[12px] font-bold text-indigo-900 leading-none mb-1">
-          Demo Account Available
-        </h2>
-        <p class="text-[11px] text-indigo-600/80 leading-relaxed mb-3">
-          Use the credentials below to explore the dashboard and features.
+    <!-- Demo Column -->
+    <div class="w-full max-w-xs bg-white border border-indigo-100 rounded-lg p-8 shadow-xs border-b-2 border-b-indigo-200/50 self-center">
+      <div class="flex flex-col gap-5">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+            <lucide-icon [name]="Info" class="w-4 h-4 text-indigo-500"></lucide-icon>
+          </div>
+          <h2 class="text-sm font-bold text-indigo-900 tracking-tight">Demo Account</h2>
+        </div>
+        
+        <p class="text-[11px] text-indigo-600/80 leading-relaxed">
+          Use the credentials below to explore all features and modules available in the dashboard.
         </p>
 
-        <div class="bg-white/60 border border-indigo-100 rounded-sm p-2.5 mb-3 space-y-1.5">
-          <div class="flex justify-between text-[10px]">
-            <span class="text-indigo-400 font-medium">Org Slug</span>
+        <div class="bg-indigo-50/30 border border-indigo-50 rounded-md p-4 space-y-2.5">
+          <div class="flex justify-between text-[11px]">
+            <span class="text-indigo-400/80 font-medium">Org Slug</span>
             <span class="text-indigo-900 font-bold select-all">corely-demo</span>
           </div>
-          <div class="flex justify-between text-[10px]">
-            <span class="text-indigo-400 font-medium">Email</span>
+          <div class="flex justify-between text-[11px]">
+            <span class="text-indigo-400/80 font-medium">Email</span>
             <span class="text-indigo-900 font-bold select-all">admin@corely.io</span>
           </div>
-          <div class="flex justify-between text-[10px]">
-            <span class="text-indigo-400 font-medium">Password</span>
+          <div class="flex justify-between text-[11px]">
+            <span class="text-indigo-400/80 font-medium">Password</span>
             <span class="text-indigo-900 font-bold select-all">Password@123</span>
           </div>
         </div>
@@ -107,11 +102,12 @@
         <button
           type="button"
           (click)="useDemo()"
-          class="w-full py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded-sm transition-colors shadow-sm"
+          class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-md transition-all shadow-sm active:translate-y-[1px]"
         >
           Auto-fill Credentials
         </button>
       </div>
     </div>
+
   </div>
 </div>
