@@ -1,0 +1,412 @@
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" routerLink="/">Corely<span>.</span></a>
+  <div class="nav-right">
+    <a class="nav-link" href="#features">Features</a>
+    <a class="nav-link" href="#modules">Modules</a>
+    <a class="btn-demo" routerLink="/login">Try demo →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="max-width: 1100px; margin: 0 auto; position: relative; overflow: hidden">
+  <div class="hero-grid" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span
+    ><span></span> <span></span><span></span><span></span><span></span><span></span><span></span
+    ><span></span><span></span> <span></span><span></span><span></span><span></span><span></span
+    ><span></span><span></span><span></span> <span></span><span></span><span></span><span></span
+    ><span></span><span></span><span></span><span></span> <span></span><span></span><span></span
+    ><span></span><span></span><span></span><span></span><span></span> <span></span><span></span
+    ><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <section class="hero">
+    <div class="eyebrow">Live demo available</div>
+    <h1>ERP that doesn't<br />make you <em>hate</em> ERP</h1>
+    <p class="hero-sub">
+      Corely is a full-stack ERP built for Indian SMBs — POS, inventory, GST invoicing, multi-store,
+      audit logs, and role-based access. All in one clean interface.
+    </p>
+    <div class="hero-actions">
+      <a class="btn-primary" routerLink="/login">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+          <polyline points="10 17 15 12 10 7" />
+          <line x1="15" y1="12" x2="3" y2="12" />
+        </svg>
+        Open live demo
+      </a>
+      <a class="btn-secondary" href="#modules">See all modules ↓</a>
+    </div>
+    <div class="demo-creds">Use org: <strong>Demo Org</strong> &nbsp;·&nbsp; No signup needed</div>
+  </section>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-inner">
+    <div class="stat reveal">
+      <div class="stat-num">11</div>
+      <div class="stat-label">Modules built & live</div>
+    </div>
+    <div class="stat reveal" style="transition-delay: 0.07s">
+      <div class="stat-num">7</div>
+      <div class="stat-label">Roadmap phases shipped</div>
+    </div>
+    <div class="stat reveal" style="transition-delay: 0.14s">
+      <div class="stat-num">4</div>
+      <div class="stat-label">RBAC roles</div>
+    </div>
+    <div class="stat reveal" style="transition-delay: 0.21s">
+      <div class="stat-num">GST</div>
+      <div class="stat-label">CGST / SGST / IGST ready</div>
+    </div>
+    <div class="stat reveal" style="transition-delay: 0.28s">
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Multi-tenant orgs</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-label">What's inside</div>
+  <h2 class="section-title reveal">Everything an SMB needs, nothing it doesn't.</h2>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon">🏪</div>
+      <div class="feature-name">Point of Sale</div>
+      <div class="feature-desc">
+        Create bills with line items, apply discounts, split payment modes (cash, UPI, card,
+        credit), auto-deduct stock, hold & resume bills.
+      </div>
+    </div>
+    <div class="feature-card reveal" style="transition-delay: 0.05s">
+      <div class="feature-icon">📦</div>
+      <div class="feature-name">Inventory Management</div>
+      <div class="feature-desc">
+        Stock movements, purchase entries, adjustments, real-time stock summary, and a full ledger
+        view. Multi-store aware.
+      </div>
+    </div>
+    <div class="feature-card reveal" style="transition-delay: 0.1s">
+      <div class="feature-icon">🧾</div>
+      <div class="feature-name">GST Invoicing</div>
+      <div class="feature-desc">
+        Auto-generate invoice numbers per financial year. CGST/SGST/IGST based on customer state.
+        HSN-wise tax summary. PDF export.
+      </div>
+    </div>
+    <div class="feature-card reveal" style="transition-delay: 0.15s">
+      <div class="feature-icon">🏬</div>
+      <div class="feature-name">Multi-store</div>
+      <div class="feature-desc">
+        Multiple locations with separate stock, managers, and POS sessions. Stock transfers between
+        stores. Store-wise sales reports.
+      </div>
+    </div>
+    <div class="feature-card reveal" style="transition-delay: 0.2s">
+      <div class="feature-icon">📊</div>
+      <div class="feature-name">Reports & Dashboard</div>
+      <div class="feature-desc">
+        Daily/weekly/monthly sales, top items, low stock alerts, vendor dues, customer balances,
+        margin reports, CSV/Excel export.
+      </div>
+    </div>
+    <div class="feature-card reveal" style="transition-delay: 0.25s">
+      <div class="feature-icon">🔐</div>
+      <div class="feature-name">RBAC & Audit Logs</div>
+      <div class="feature-desc">
+        4 roles: super admin, admin, manager, employee. Every create/update/delete is logged with
+        before/after diffs. TTL-based retention.
+      </div>
+    </div>
+    <div class="feature-card reveal" style="transition-delay: 0.3s">
+      <div class="feature-icon">👥</div>
+      <div class="feature-name">Customers & Vendors</div>
+      <div class="feature-desc">
+        Full CRUD for both. Link customers to sales, vendors to purchase entries. Groundwork for
+        AP/AR outstanding tracking.
+      </div>
+    </div>
+    <div class="feature-card reveal" style="transition-delay: 0.35s">
+      <div class="feature-icon">🏢</div>
+      <div class="feature-name">Multi-tenant Architecture</div>
+      <div class="feature-desc">
+        Each org gets slug-prefixed collections. Completely isolated data. One deployment, infinite
+        orgs. Setup wizard with slug check.
+      </div>
+    </div>
+    <div class="feature-card reveal" style="transition-delay: 0.4s">
+      <div class="feature-icon">🔄</div>
+      <div class="feature-name">Sale Returns & Quotations</div>
+      <div class="feature-desc">
+        Credit notes for returns, delivery challan generation, quotation/estimate workflows. Full
+        document lifecycle out of the box.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES TABLE -->
+<div class="modules-section" id="modules">
+  <div class="modules-inner">
+    <div class="section-label">Module status</div>
+    <h2 class="section-title reveal">Every module. Built, tested, running.</h2>
+    <table class="modules-table">
+      <thead>
+        <tr>
+          <th>Module</th>
+          <th>Key endpoints</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="reveal">
+          <td>
+            <strong>Auth & Users</strong>
+            <div class="module-desc">JWT auth, session management, profile, password reset</div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >/api/v1/auth, /api/v1/users</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+        <tr class="reveal">
+          <td>
+            <strong>POS — Point of Sale</strong>
+            <div class="module-desc">Bills, returns, holds, cash register open/close</div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >/api/v1/pos</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+        <tr class="reveal">
+          <td>
+            <strong>Invoicing / Billing</strong>
+            <div class="module-desc">
+              Tax invoices, credit notes, delivery challans, quotations, PDF export
+            </div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >/api/v1/invoices</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+        <tr class="reveal">
+          <td>
+            <strong>Inventory</strong>
+            <div class="module-desc">Movements, purchases, adjustments, stock summary, ledger</div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >/api/v1/inventory</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+        <tr class="reveal">
+          <td>
+            <strong>Items / Products</strong>
+            <div class="module-desc">Product catalogue with HSN codes, GST rates, categories</div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >/api/v1/items</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+        <tr class="reveal">
+          <td>
+            <strong>Customers & Vendors</strong>
+            <div class="module-desc">Full CRUD, linked to sales and purchase flows</div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >/api/v1/customers, /api/v1/vendors</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+        <tr class="reveal">
+          <td>
+            <strong>Stores / Locations</strong>
+            <div class="module-desc">
+              Multi-location, stock transfers, store-wise POS and reports
+            </div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >/api/v1/stores</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+        <tr class="reveal">
+          <td>
+            <strong>Reports & Dashboard</strong>
+            <div class="module-desc">Sales summaries, margins, alerts, CSV/Excel export</div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >/api/v1/reports</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+        <tr class="reveal">
+          <td>
+            <strong>Audit Logs</strong>
+            <div class="module-desc">Full before/after diffs on every write operation</div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >/api/v1/audit</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+        <tr class="reveal">
+          <td>
+            <strong>RBAC</strong>
+            <div class="module-desc">
+              super_admin, admin, manager, employee — JWT + middleware enforced
+            </div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >middleware layer</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+        <tr class="reveal">
+          <td>
+            <strong>Organization setup</strong>
+            <div class="module-desc">
+              Slug-based multi-tenant setup wizard, slug availability check
+            </div>
+          </td>
+          <td>
+            <code style="font-family: var(--mono); font-size: 12px; color: var(--muted)"
+              >/base/api/v1</code
+            >
+          </td>
+          <td><span class="status-badge">Live</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- GET STARTED -->
+<div class="section reveal">
+  <div class="quickstart">
+    <div class="qs-header">
+      <h2 class="qs-title">Get Started</h2>
+      <p class="qs-sub">To explore every corely module, follow these simple steps.</p>
+    </div>
+    <div class="qs-grid">
+      <!-- Card 1 -->
+      <div class="qs-card">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div class="qs-num">1</div>
+          <h3 class="qs-card-title">Open the demo</h3>
+        </div>
+        <p class="qs-card-text">
+          Access the live dashboard in your browser. No local setup required.
+        </p>
+        <div class="qs-code-box">
+          <code><span class="keyword">GET</span> corely-six.vercel.app/login</code>
+        </div>
+      </div>
+      <!-- Card 2 -->
+      <div class="qs-card">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div class="qs-num">2</div>
+          <h3 class="qs-card-title">Select Demo Org</h3>
+        </div>
+        <p class="qs-card-text">
+          From the organization dropdown, choose <strong style="color: #fff">Demo Org</strong> to
+          load pre-filled data.
+        </p>
+        <div class="qs-code-box">
+          <code style="color: var(--accent)">// No signup required</code><br />
+          <code>Role: <span class="string">admin_access_ready</span></code>
+        </div>
+      </div>
+      <!-- Card 3 -->
+      <div class="qs-card">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <div class="qs-num">3</div>
+          <h3 class="qs-card-title">Explore & Test</h3>
+        </div>
+        <p class="qs-card-text">
+          Head to POS to bill, Inventory to move stock, or Reports to see margins in real-time.
+        </p>
+        <p class="qs-card-text">
+          Need help? Refer to our <a href="#" class="qs-link">documentation</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-left">
+    <div class="section-label reveal">Try it now</div>
+    <h2 class="cta-title reveal">No signup. No credit card.<br />Just log in.</h2>
+    <p class="cta-sub reveal">
+      A demo org is pre-loaded with data so you can explore every module — POS, inventory,
+      invoicing, reports — right from the login screen.
+    </p>
+  </div>
+  <div class="cta-right reveal">
+    <div class="cred-block">
+      <div class="cred-row">
+        <span class="cred-key">URL</span><span class="cred-val">corely-six.vercel.app/login</span>
+      </div>
+      <div class="cred-row">
+        <span class="cred-key">Org</span><span class="cred-val">Demo Org (in the list)</span>
+      </div>
+      <div class="cred-row">
+        <span class="cred-key">Role</span><span class="cred-val">Admin access pre-loaded</span>
+      </div>
+    </div>
+    <a class="btn-primary" routerLink="/login" style="width: 100%; justify-content: center">
+      Open demo →
+    </a>
+    <p style="font-size: 12px; color: var(--muted); text-align: center; width: 100%">
+      Built solo · Feedback welcome
+    </p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <a class="nav-logo" routerLink="/" style="font-size: 18px"
+      >Corely<span style="color: var(--accent)">.</span></a
+    >
+    <p class="footer-note">
+      Built by · <a href="https://ali-mandela.vercel.app/">Ali Mandela</a>
+    </p>
+  </div>
+</footer>

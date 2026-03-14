@@ -14,6 +14,8 @@ import { ToasterService } from '../../../shared/components/toaster/toaster.servi
   templateUrl: './invoice-edit.component.html',
   styles: [
     `
+      @reference "tailwindcss";
+
       :host {
         display: block;
       }

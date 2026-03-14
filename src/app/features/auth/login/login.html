@@ -1,24 +1,69 @@
-<div class="min-h-screen bg-[#f8fafc] flex items-center justify-center p-6 font-['Inter'] antialiased">
-  <div class="flex flex-col lg:flex-row items-center justify-center gap-12 sm:gap-16 w-full max-w-5xl animate-in">
-    
+<div
+  class="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center p-6 font-['Inter'] antialiased"
+>
+  <!-- Top Nav -->
+  <div
+    class="absolute top-0 left-0 right-0 p-6 flex justify-between items-center max-w-5xl mx-auto w-full"
+  >
+    <a routerLink="/" class="flex items-center gap-2 group">
+      <lucide-icon
+        [name]="Layers"
+        class="w-5 h-5 text-slate-400 group-hover:text-indigo-600 transition-colors"
+      ></lucide-icon>
+      <span class="text-sm font-bold text-slate-900">Corely</span>
+    </a>
+    <a
+      href="/company"
+      class="text-xs font-semibold text-slate-500 hover:text-indigo-600 transition-colors flex items-center gap-1.5"
+    >
+      Explore Company
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <line x1="7" y1="17" x2="17" y2="7" />
+        <polyline points="7 7 17 7 17 17" />
+      </svg>
+    </a>
+  </div>
+
+  <div
+    class="flex flex-col lg:flex-row items-center justify-center gap-12 sm:gap-16 w-full max-w-5xl animate-in pt-12"
+  >
     <!-- Login Column -->
     <div class="w-full max-w-sm">
       <!-- Logo -->
       <div class="flex items-center justify-center gap-3 mb-10">
-        <div class="w-10 h-10 bg-[#0f172a] rounded-lg flex items-center justify-center text-white shadow-lg">
+        <div
+          class="w-10 h-10 bg-[#0f172a] rounded-lg flex items-center justify-center text-white shadow-lg"
+        >
           <lucide-icon [name]="Layers" class="w-6 h-6"></lucide-icon>
         </div>
         <span class="text-xl font-bold text-[#0f172a] tracking-tight">Corely ERP</span>
       </div>
 
-      <div class="mb-6 bg-slate-50 border border-slate-200 rounded-md p-4 text-[11px] text-slate-500 italic leading-relaxed">
+      <div
+        class="mb-6 bg-slate-50 border border-slate-200 rounded-md p-4 text-[11px] text-slate-500 italic leading-relaxed"
+      >
         "Please let us know in case you are facing any issue and want to use the system"
         <br />
-        <a href="mailto:resposive.developers@gmail.com" class="text-indigo-600 font-bold hover:underline transition-all">resposive.developers@gmail.com</a>
+        <a
+          href="mailto:resposive.developers@gmail.com"
+          class="text-indigo-600 font-bold hover:underline transition-all"
+          >resposive.developers@gmail.com</a
+        >
       </div>
 
       <!-- Login Card -->
-      <div class="bg-white border border-slate-200 rounded-lg p-8 shadow-xs border-b-2 border-b-slate-300/50">
+      <div
+        class="bg-white border border-slate-200 rounded-lg p-8 shadow-xs border-b-2 border-b-slate-300/50"
+      >
         <div class="mb-8">
           <h1 class="text-lg font-bold text-slate-900 tracking-tight">Sign in</h1>
           <p class="text-[12px] text-slate-400 mt-1">
@@ -27,7 +72,10 @@
         </div>
 
         <!-- Error -->
-        <div *ngIf="error" class="mb-6 px-4 py-2 bg-red-50 border border-red-100 rounded-md text-[11px] font-semibold text-red-600 animate-in">
+        <div
+          *ngIf="error"
+          class="mb-6 px-4 py-2 bg-red-50 border border-red-100 rounded-md text-[11px] font-semibold text-red-600 animate-in"
+        >
           {{ error }}
         </div>
 
@@ -70,11 +118,17 @@
         </form>
       </div>
 
-      <p class="text-center text-[10px] text-slate-400 mt-8 tracking-widest uppercase font-semibold">Corely Enterprise System • v1.0</p>
+      <p
+        class="text-center text-[10px] text-slate-400 mt-8 tracking-widest uppercase font-semibold"
+      >
+        Corely Enterprise System • v1.0
+      </p>
     </div>
 
     <!-- Demo Column -->
-    <div class="w-full max-w-xs bg-white border border-indigo-100 rounded-lg p-8 shadow-xs border-b-2 border-b-indigo-200/50 self-center">
+    <div
+      class="w-full max-w-xs bg-white border border-indigo-100 rounded-lg p-8 shadow-xs border-b-2 border-b-indigo-200/50 self-center"
+    >
       <div class="flex flex-col gap-5">
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
@@ -82,7 +136,7 @@
           </div>
           <h2 class="text-sm font-bold text-indigo-900 tracking-tight">Demo Account</h2>
         </div>
-        
+
         <p class="text-[11px] text-indigo-600/80 leading-relaxed">
           Use the credentials below to explore all features and modules available in the dashboard.
         </p>
@@ -111,6 +165,5 @@
         </button>
       </div>
     </div>
-
   </div>
 </div>

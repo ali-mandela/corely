@@ -26,8 +26,11 @@ import { AuditListComponent } from './features/audit/audit-list/audit-list';
 import { ReportsComponent } from './features/reports/reports';
 import { ProfileComponent } from './features/profile/profile';
 
+import { CompanyComponent } from './features/company/company.component';
+
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, title: 'Login — Corely' },
+  { path: 'company', component: CompanyComponent, title: 'Company — Corely' },
   {
     path: '',
     component: ShellComponent,
