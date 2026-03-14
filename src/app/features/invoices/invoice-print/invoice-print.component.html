@@ -1,0 +1,229 @@
+<!-- Screen controls (hidden during print) -->
+<div class="no-print flex items-center justify-between px-6 py-3 bg-white border-b border-slate-200">
+  <a routerLink="/invoices" class="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-slate-800 transition-colors">
+    <lucide-icon [name]="ArrowLeft" class="w-3.5 h-3.5"></lucide-icon> Back to Invoices
+  </a>
+  <button
+    type="button"
+    (click)="print()"
+    class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-[11px] font-bold rounded-sm hover:bg-indigo-700 transition-colors"
+  >
+    <lucide-icon [name]="Printer" class="w-3.5 h-3.5"></lucide-icon> Print / Save PDF
+  </button>
+</div>
+
+<!-- Loading -->
+<div *ngIf="loading()" class="no-print flex items-center justify-center py-24">
+  <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+    </svg>
+    Loading invoice...
+  </div>
+</div>
+
+<!-- Print Sheet -->
+<div *ngIf="!loading() && invoice" class="print-sheet" id="print-area">
+
+  <!-- Header: Title + Invoice Meta -->
+  <div class="print-header">
+    <div>
+      <div class="company-name">{{ invoice.seller?.name }}</div>
+      <div class="company-meta" *ngIf="invoice.seller?.gstin">GSTIN: {{ invoice.seller.gstin }}</div>
+      <div class="company-meta">
+        {{ invoice.seller?.address_line1 }}{{ invoice.seller?.address_line2 ? ', ' + invoice.seller.address_line2 : '' }}
+      </div>
+      <div class="company-meta">
+        {{ invoice.seller?.city }}{{ invoice.seller?.state ? ', ' + invoice.seller.state : '' }}
+        {{ invoice.seller?.pin_code ? ' - ' + invoice.seller.pin_code : '' }}
+      </div>
+      <div class="company-meta" *ngIf="invoice.seller?.phone">Ph: {{ invoice.seller.phone }}</div>
+      <div class="company-meta" *ngIf="invoice.seller?.email">{{ invoice.seller.email }}</div>
+    </div>
+    <div class="invoice-title-block">
+      <div class="invoice-type-label">{{ getInvoiceTypeLabel(invoice.invoice_type) }}</div>
+      <table class="meta-table">
+        <tr>
+          <td class="meta-key">Invoice No.</td>
+          <td class="meta-val">{{ invoice.invoice_number }}</td>
+        </tr>
+        <tr>
+          <td class="meta-key">Date</td>
+          <td class="meta-val">{{ invoice.invoice_date | date: 'dd/MM/yyyy' }}</td>
+        </tr>
+        <tr *ngIf="invoice.due_date">
+          <td class="meta-key">Due Date</td>
+          <td class="meta-val">{{ invoice.due_date | date: 'dd/MM/yyyy' }}</td>
+        </tr>
+        <tr *ngIf="invoice.place_of_supply">
+          <td class="meta-key">Place of Supply</td>
+          <td class="meta-val">{{ invoice.place_of_supply }}</td>
+        </tr>
+        <tr>
+          <td class="meta-key">Reverse Charge</td>
+          <td class="meta-val">{{ invoice.reverse_charge ? 'Yes' : 'No' }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Buyer / Ship To -->
+  <div class="parties-row">
+    <div class="party-block">
+      <div class="party-label">Bill To</div>
+      <div class="party-name">{{ invoice.buyer?.name }}</div>
+      <div class="party-detail" *ngIf="invoice.buyer?.gstin">GSTIN: {{ invoice.buyer.gstin }}</div>
+      <div class="party-detail" *ngIf="invoice.buyer?.pan">PAN: {{ invoice.buyer.pan }}</div>
+      <div class="party-detail" *ngIf="invoice.buyer?.address_line1">{{ invoice.buyer.address_line1 }}</div>
+      <div class="party-detail">
+        {{ invoice.buyer?.city }}{{ invoice.buyer?.state ? ', ' + invoice.buyer.state : '' }}
+        {{ invoice.buyer?.pin_code ? ' - ' + invoice.buyer.pin_code : '' }}
+      </div>
+      <div class="party-detail" *ngIf="invoice.buyer?.phone">Ph: {{ invoice.buyer.phone }}</div>
+      <div class="party-detail" *ngIf="invoice.buyer?.email">{{ invoice.buyer.email }}</div>
+    </div>
+    <div class="party-block" *ngIf="invoice.eway_bill_number || invoice.transport_mode || invoice.vehicle_number">
+      <div class="party-label">Transport Details</div>
+      <div *ngIf="invoice.transport_mode" class="party-detail">Mode: {{ invoice.transport_mode }}</div>
+      <div *ngIf="invoice.vehicle_number" class="party-detail">Vehicle: {{ invoice.vehicle_number }}</div>
+      <div *ngIf="invoice.eway_bill_number" class="party-detail">E-Way Bill: {{ invoice.eway_bill_number }}</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Items Table -->
+  <table class="items-table">
+    <thead>
+      <tr>
+        <th class="text-center w-8">#</th>
+        <th>Description of Goods / Services</th>
+        <th class="text-center">HSN/SAC</th>
+        <th class="text-center">Qty</th>
+        <th class="text-center">Unit</th>
+        <th class="text-right">Rate (₹)</th>
+        <th class="text-right">Taxable (₹)</th>
+        <th class="text-center">GST %</th>
+        <th class="text-right">Tax (₹)</th>
+        <th class="text-right">Total (₹)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of invoice.items; let i = index">
+        <td class="text-center">{{ i + 1 }}</td>
+        <td>{{ item.description }}</td>
+        <td class="text-center font-mono text-[9px]">{{ item.hsn_code || '—' }}</td>
+        <td class="text-center">{{ item.quantity }}</td>
+        <td class="text-center">{{ item.unit }}</td>
+        <td class="text-right">{{ formatNum(item.unit_price) }}</td>
+        <td class="text-right">{{ formatNum(item.taxable_amount) }}</td>
+        <td class="text-center">{{ item.gst_rate }}%</td>
+        <td class="text-right">{{ formatNum(item.total_tax) }}</td>
+        <td class="text-right font-bold">{{ formatNum(item.line_total) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- HSN Summary + Totals -->
+  <div class="bottom-section">
+
+    <!-- HSN Summary -->
+    <div class="hsn-section" *ngIf="invoice.hsn_summary?.length">
+      <div class="section-label">HSN/SAC Summary</div>
+      <table class="hsn-table">
+        <thead>
+          <tr>
+            <th>HSN/SAC</th>
+            <th class="text-right">Taxable Value</th>
+            <th class="text-right" *ngIf="invoice.gst_type === 'cgst_sgst'">CGST</th>
+            <th class="text-right" *ngIf="invoice.gst_type === 'cgst_sgst'">SGST</th>
+            <th class="text-right" *ngIf="invoice.gst_type === 'igst'">IGST</th>
+            <th class="text-right">Total Tax</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let h of invoice.hsn_summary">
+            <td class="font-mono">{{ h.hsn_code }}</td>
+            <td class="text-right">{{ formatNum(h.taxable_value) }}</td>
+            <td class="text-right" *ngIf="invoice.gst_type === 'cgst_sgst'">{{ formatNum(h.cgst) }}</td>
+            <td class="text-right" *ngIf="invoice.gst_type === 'cgst_sgst'">{{ formatNum(h.sgst) }}</td>
+            <td class="text-right" *ngIf="invoice.gst_type === 'igst'">{{ formatNum(h.igst) }}</td>
+            <td class="text-right font-bold">{{ formatNum(h.total_tax) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Totals -->
+    <div class="totals-block">
+      <div class="totals-row">
+        <span>Subtotal</span>
+        <span>{{ formatNum(invoice.subtotal) }}</span>
+      </div>
+      <div class="totals-row" *ngIf="invoice.total_discount">
+        <span>Discount</span>
+        <span>- {{ formatNum(invoice.total_discount) }}</span>
+      </div>
+      <div class="totals-row">
+        <span>Taxable Amount</span>
+        <span>{{ formatNum(invoice.taxable_total) }}</span>
+      </div>
+      <ng-container *ngIf="invoice.gst_type === 'cgst_sgst'">
+        <div class="totals-row" *ngIf="invoice.cgst_total">
+          <span>CGST</span>
+          <span>{{ formatNum(invoice.cgst_total) }}</span>
+        </div>
+        <div class="totals-row" *ngIf="invoice.sgst_total">
+          <span>SGST</span>
+          <span>{{ formatNum(invoice.sgst_total) }}</span>
+        </div>
+      </ng-container>
+      <div class="totals-row" *ngIf="invoice.gst_type === 'igst' && invoice.igst_total">
+        <span>IGST</span>
+        <span>{{ formatNum(invoice.igst_total) }}</span>
+      </div>
+      <div class="totals-row" *ngIf="!invoice.cgst_total && !invoice.igst_total">
+        <span>Total Tax</span>
+        <span>{{ formatNum(invoice.total_tax) }}</span>
+      </div>
+      <div class="totals-row" *ngIf="invoice.round_off">
+        <span>Round Off</span>
+        <span>{{ formatNum(invoice.round_off) }}</span>
+      </div>
+      <div class="totals-grand">
+        <span>Grand Total</span>
+        <span>₹ {{ formatNum(invoice.grand_total) }}</span>
+      </div>
+      <div class="amount-words">{{ invoice.amount_in_words }}</div>
+    </div>
+  </div>
+
+  <!-- Notes / Terms -->
+  <div class="divider" *ngIf="invoice.notes || invoice.terms_and_conditions"></div>
+  <div class="footer-notes" *ngIf="invoice.notes || invoice.terms_and_conditions">
+    <div *ngIf="invoice.notes">
+      <span class="section-label">Notes: </span>{{ invoice.notes }}
+    </div>
+    <div *ngIf="invoice.terms_and_conditions" class="mt-1">
+      <span class="section-label">Terms & Conditions: </span>{{ invoice.terms_and_conditions }}
+    </div>
+  </div>
+
+  <!-- Signature -->
+  <div class="signature-row">
+    <div class="signature-block">
+      <div class="sig-label">Receiver's Signature</div>
+      <div class="sig-line"></div>
+    </div>
+    <div class="signature-block text-right">
+      <div class="sig-label">For {{ invoice.seller?.name }}</div>
+      <div class="sig-line"></div>
+      <div class="sig-sublabel">Authorised Signatory</div>
+    </div>
+  </div>
+
+  <div class="print-footer">This is a computer generated invoice.</div>
+</div>

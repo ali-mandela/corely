@@ -2,7 +2,18 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, ChevronLeft, ChevronRight, FileText, Receipt, Check, X, Printer } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  Receipt,
+  Check,
+  X,
+  Printer,
+  Pencil,
+} from 'lucide-angular';
 import { ApiService } from '../../../core/services/api.service';
 import { BadgeComponent } from '../../../shared/components/badge/badge';
 import { InputComponent } from '../../../shared/components/input/input';
@@ -24,7 +35,15 @@ interface Invoice {
 @Component({
   selector: 'app-invoices-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule, BadgeComponent, InputComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    LucideAngularModule,
+    BadgeComponent,
+    InputComponent,
+    ButtonComponent,
+  ],
   providers: [DatePipe],
   templateUrl: './invoices-list.html',
   styles: [
@@ -101,7 +120,7 @@ export class InvoicesListComponent implements OnInit {
         this.defaultStore = stores.find((s: any) => s.is_default) || stores[0] || null;
         this.loadingStore.set(false);
       },
-      error: () => this.loadingStore.set(false)
+      error: () => this.loadingStore.set(false),
     });
   }
 
@@ -220,7 +239,7 @@ export class InvoicesListComponent implements OnInit {
     this.loadingSales.set(true);
     const params: any = { customer_id: customerId, limit: 50 };
     if (this.posStatusFilter()) params.status = this.posStatusFilter();
-    
+
     this.api.get<any>('/pos/sales', params).subscribe({
       next: (res) => {
         const data = res.data?.sales || [];
@@ -256,14 +275,14 @@ export class InvoicesListComponent implements OnInit {
     const aggregatedItems: any[] = [];
     salesToImport.forEach((sale) => {
       sale.items.forEach((item: any) => {
-        // Items are aggregated by ID AND effective unit price (after discount) 
+        // Items are aggregated by ID AND effective unit price (after discount)
         // to maintain correct financials if the same item had different discounts
         const effectivePrice = item.taxable_amount / item.quantity;
-        
+
         const existing = aggregatedItems.find(
-          (ai) => ai.item_id === item.item_id && Math.abs(ai.unit_price - effectivePrice) < 0.01
+          (ai) => ai.item_id === item.item_id && Math.abs(ai.unit_price - effectivePrice) < 0.01,
         );
-        
+
         if (existing) {
           existing.quantity += item.quantity;
           const taxable = existing.unit_price * existing.quantity;
@@ -289,7 +308,9 @@ export class InvoicesListComponent implements OnInit {
     const totalTax = aggregatedItems.reduce((s, i) => s + i.total_tax, 0);
 
     if (!this.defaultStore) {
-      this.toaster.warning('Seller information (Store) not found. Please ensure a store is created.');
+      this.toaster.warning(
+        'Seller information (Store) not found. Please ensure a store is created.',
+      );
       this.loadDefaultStore(); // Try reloading
       return;
     }
@@ -321,15 +342,15 @@ export class InvoicesListComponent implements OnInit {
         phone: this.selectedCustomer.phone || '',
         email: this.selectedCustomer.email || '',
       },
-      items: aggregatedItems.map(item => ({
+      items: aggregatedItems.map((item) => ({
         ...item,
-        taxable_amount: +(item.unit_price * item.quantity).toFixed(2)
+        taxable_amount: +(item.unit_price * item.quantity).toFixed(2),
       })),
       subtotal: +subtotal.toFixed(2),
       taxable_total: +subtotal.toFixed(2),
       total_tax: +totalTax.toFixed(2),
       grand_total: Math.round(subtotal + totalTax),
-      notes: `Consolidated from POS Sales: ${salesToImport.map(s => s.invoice_number || s._id.slice(-8)).join(', ')}`
+      notes: `Consolidated from POS Sales: ${salesToImport.map((s) => s.invoice_number || s._id.slice(-8)).join(', ')}`,
     };
 
     this.api.post('/invoices', payload).subscribe({
@@ -341,5 +362,31 @@ export class InvoicesListComponent implements OnInit {
       },
       error: () => this.generating.set(false),
     });
+  }
+
+  readonly Pencil = Pencil;
+
+  // View modal
+  showViewModal = signal(false);
+  selectedInvoice: any = null;
+
+  openViewModal(inv: any): void {
+    // Fetch full invoice details if needed
+    this.api.get<any>(`/invoices/${inv._id}`).subscribe({
+      next: (res) => {
+        this.selectedInvoice = res.data?.invoice || res.data || inv;
+        this.showViewModal.set(true);
+      },
+      error: () => {
+        // Fallback to list data
+        this.selectedInvoice = inv;
+        this.showViewModal.set(true);
+      },
+    });
+  }
+
+  printInvoice(inv: any): void {
+    // Navigate to print route or open print window
+    window.open(`/invoices/${inv._id}/print`, '_blank');
   }
 }

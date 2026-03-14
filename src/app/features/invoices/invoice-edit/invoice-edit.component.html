@@ -1,0 +1,340 @@
+<div class="p-6 max-w-4xl mx-auto space-y-6 animate-in">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a routerLink="/invoices" class="p-1.5 hover:bg-slate-100 rounded-sm transition-colors">
+        <lucide-icon [name]="ArrowLeft" class="w-4 h-4 text-slate-400"></lucide-icon>
+      </a>
+      <div>
+        <h1 class="text-lg font-bold text-slate-900">Edit Invoice</h1>
+        <p class="text-[11px] text-slate-400 mt-0.5">
+          {{ invoice?.invoice_number || 'Loading...' }}
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <a
+        routerLink="/invoices"
+        class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-[11px] font-bold rounded-sm hover:bg-slate-50 transition-all"
+      >
+        Cancel
+      </a>
+      <app-button variant="primary" size="sm" [loading]="saving()" [icon]="Save" (click)="save()">
+        Save Changes
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading()" class="flex items-center justify-center py-24">
+    <div class="flex items-center gap-2 text-slate-400 text-[12px]">
+      <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      Loading invoice...
+    </div>
+  </div>
+
+  <div *ngIf="!loading() && invoice" class="space-y-5">
+    <!-- Status & Meta Row -->
+    <div class="grid grid-cols-3 gap-4">
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Status</label>
+        <select
+          [(ngModel)]="form.status"
+          class="w-full bg-white border border-slate-200 rounded-sm px-2.5 py-2 text-[12px] text-slate-700 outline-none focus:border-indigo-400 transition-colors"
+        >
+          <option value="draft">Draft</option>
+          <option value="issued">Issued</option>
+          <option value="paid">Paid</option>
+          <option value="partially_paid">Partially Paid</option>
+          <option value="overdue">Overdue</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+          >Due Date</label
+        >
+        <input
+          type="date"
+          [(ngModel)]="form.due_date"
+          class="w-full bg-white border border-slate-200 rounded-sm px-2.5 py-2 text-[12px] text-slate-700 outline-none focus:border-indigo-400 transition-colors"
+        />
+      </div>
+      <div class="space-y-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+          >Place of Supply</label
+        >
+        <input
+          type="text"
+          [(ngModel)]="form.place_of_supply"
+          placeholder="e.g. Jammu and Kashmir"
+          class="w-full bg-white border border-slate-200 rounded-sm px-2.5 py-2 text-[12px] text-slate-700 outline-none focus:border-indigo-400 transition-colors placeholder:text-slate-300"
+        />
+      </div>
+    </div>
+
+    <!-- Seller / Buyer -->
+    <div class="grid grid-cols-2 gap-4">
+      <!-- Seller -->
+      <div class="bg-white border border-slate-200 rounded-sm p-4 space-y-3">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Seller Details</p>
+        <div class="space-y-2">
+          <input [(ngModel)]="form.seller.name" placeholder="Seller name" class="input-field" />
+          <input
+            [(ngModel)]="form.seller.gstin"
+            placeholder="GSTIN"
+            class="input-field font-mono"
+          />
+          <input
+            [(ngModel)]="form.seller.address_line1"
+            placeholder="Address"
+            class="input-field"
+          />
+          <div class="grid grid-cols-2 gap-2">
+            <input [(ngModel)]="form.seller.city" placeholder="City" class="input-field" />
+            <input [(ngModel)]="form.seller.state" placeholder="State" class="input-field" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <input [(ngModel)]="form.seller.pin_code" placeholder="PIN Code" class="input-field" />
+            <input [(ngModel)]="form.seller.phone" placeholder="Phone" class="input-field" />
+          </div>
+          <input [(ngModel)]="form.seller.email" placeholder="Email" class="input-field" />
+        </div>
+      </div>
+
+      <!-- Buyer -->
+      <div class="bg-white border border-slate-200 rounded-sm p-4 space-y-3">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Buyer Details</p>
+        <div class="space-y-2">
+          <input [(ngModel)]="form.buyer.name" placeholder="Buyer name" class="input-field" />
+          <input [(ngModel)]="form.buyer.gstin" placeholder="GSTIN" class="input-field font-mono" />
+          <input [(ngModel)]="form.buyer.pan" placeholder="PAN" class="input-field font-mono" />
+          <input [(ngModel)]="form.buyer.address_line1" placeholder="Address" class="input-field" />
+          <div class="grid grid-cols-2 gap-2">
+            <input [(ngModel)]="form.buyer.city" placeholder="City" class="input-field" />
+            <input [(ngModel)]="form.buyer.state" placeholder="State" class="input-field" />
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <input [(ngModel)]="form.buyer.pin_code" placeholder="PIN Code" class="input-field" />
+            <input [(ngModel)]="form.buyer.phone" placeholder="Phone" class="input-field" />
+          </div>
+          <input [(ngModel)]="form.buyer.email" placeholder="Email" class="input-field" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Items -->
+    <div class="bg-white border border-slate-200 rounded-sm overflow-hidden">
+      <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Line Items</p>
+        <button
+          type="button"
+          (click)="addItem()"
+          class="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold text-indigo-600 hover:bg-indigo-50 rounded-sm transition-colors"
+        >
+          <lucide-icon [name]="Plus" class="w-3 h-3"></lucide-icon> Add Item
+        </button>
+      </div>
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50/80 border-b border-slate-100">
+            <th class="px-3 py-2 text-[9px] font-bold uppercase text-slate-400 w-6">#</th>
+            <th class="px-3 py-2 text-[9px] font-bold uppercase text-slate-400">Description</th>
+            <th class="px-3 py-2 text-[9px] font-bold uppercase text-slate-400">HSN</th>
+            <th class="px-3 py-2 text-[9px] font-bold uppercase text-slate-400 w-20">Qty</th>
+            <th class="px-3 py-2 text-[9px] font-bold uppercase text-slate-400 w-16">Unit</th>
+            <th class="px-3 py-2 text-[9px] font-bold uppercase text-slate-400 w-28">Unit Price</th>
+            <th class="px-3 py-2 text-[9px] font-bold uppercase text-slate-400 w-20">GST %</th>
+            <th class="px-3 py-2 text-[9px] font-bold uppercase text-slate-400 text-right w-24">
+              Total
+            </th>
+            <th class="px-3 py-2 w-8"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of form.items; let i = index" class="border-b border-slate-50 group">
+            <td class="px-3 py-2 text-[10px] text-slate-400">{{ i + 1 }}</td>
+            <td class="px-3 py-2">
+              <input
+                [(ngModel)]="item.description"
+                (ngModelChange)="recalcItem(i)"
+                class="item-input w-full"
+                placeholder="Item description"
+              />
+            </td>
+            <td class="px-3 py-2">
+              <input
+                [(ngModel)]="item.hsn_code"
+                class="item-input w-20 font-mono"
+                placeholder="HSN"
+              />
+            </td>
+            <td class="px-3 py-2">
+              <input
+                type="number"
+                [(ngModel)]="item.quantity"
+                (ngModelChange)="recalcItem(i)"
+                class="item-input w-16 text-right"
+                min="1"
+              />
+            </td>
+            <td class="px-3 py-2">
+              <input [(ngModel)]="item.unit" class="item-input w-14" placeholder="pcs" />
+            </td>
+            <td class="px-3 py-2">
+              <input
+                type="number"
+                [(ngModel)]="item.unit_price"
+                (ngModelChange)="recalcItem(i)"
+                class="item-input w-24 text-right"
+                step="0.01"
+              />
+            </td>
+            <td class="px-3 py-2">
+              <select
+                [(ngModel)]="item.gst_rate"
+                (ngModelChange)="recalcItem(i)"
+                class="item-input w-16 text-center"
+              >
+                <option [value]="0">0%</option>
+                <option [value]="5">5%</option>
+                <option [value]="12">12%</option>
+                <option [value]="18">18%</option>
+                <option [value]="28">28%</option>
+              </select>
+            </td>
+            <td class="px-3 py-2 text-[11px] font-bold text-slate-900 text-right">
+              {{ formatCurrency(item.line_total || 0) }}
+            </td>
+            <td class="px-3 py-2">
+              <button
+                type="button"
+                (click)="removeItem(i)"
+                class="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded-sm transition-all"
+              >
+                <lucide-icon [name]="Trash2" class="w-3 h-3 text-red-400"></lucide-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Totals + Extra Fields -->
+    <div class="grid grid-cols-2 gap-4">
+      <!-- Left: Notes, Payment Terms, Transport -->
+      <div class="space-y-3">
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Notes</label>
+          <textarea
+            [(ngModel)]="form.notes"
+            rows="3"
+            placeholder="Additional notes..."
+            class="w-full bg-white border border-slate-200 rounded-sm px-2.5 py-2 text-[12px] text-slate-700 outline-none focus:border-indigo-400 transition-colors resize-none placeholder:text-slate-300"
+          ></textarea>
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+            >Terms & Conditions</label
+          >
+          <textarea
+            [(ngModel)]="form.terms_and_conditions"
+            rows="2"
+            placeholder="Payment terms, return policy..."
+            class="w-full bg-white border border-slate-200 rounded-sm px-2.5 py-2 text-[12px] text-slate-700 outline-none focus:border-indigo-400 transition-colors resize-none placeholder:text-slate-300"
+          ></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+              >Transport Mode</label
+            >
+            <input
+              [(ngModel)]="form.transport_mode"
+              placeholder="Road / Rail..."
+              class="w-full bg-white border border-slate-200 rounded-sm px-2.5 py-2 text-[12px] text-slate-700 outline-none focus:border-indigo-400 transition-colors placeholder:text-slate-300"
+            />
+          </div>
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+              >Vehicle No.</label
+            >
+            <input
+              [(ngModel)]="form.vehicle_number"
+              placeholder="JK01AB1234"
+              class="w-full bg-white border border-slate-200 rounded-sm px-2.5 py-2 text-[12px] text-slate-700 outline-none focus:border-indigo-400 transition-colors placeholder:text-slate-300 font-mono"
+            />
+          </div>
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+            >E-Way Bill No.</label
+          >
+          <input
+            [(ngModel)]="form.eway_bill_number"
+            placeholder="EWB number"
+            class="w-full bg-white border border-slate-200 rounded-sm px-2.5 py-2 text-[12px] text-slate-700 outline-none focus:border-indigo-400 transition-colors placeholder:text-slate-300 font-mono"
+          />
+        </div>
+      </div>
+
+      <!-- Right: Totals Summary -->
+      <div class="bg-white border border-slate-200 rounded-sm p-4 self-start">
+        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-3">Summary</p>
+        <div class="space-y-2">
+          <div class="flex justify-between text-[12px] text-slate-600">
+            <span>Subtotal</span>
+            <span>{{ formatCurrency(totals.subtotal) }}</span>
+          </div>
+          <div class="flex justify-between text-[12px] text-slate-600">
+            <span>Total Tax</span>
+            <span>{{ formatCurrency(totals.total_tax) }}</span>
+          </div>
+          <div
+            class="border-t border-slate-100 pt-2 flex justify-between text-[14px] font-black text-slate-900"
+          >
+            <span>Grand Total</span>
+            <span class="text-indigo-600">{{ formatCurrency(totals.grand_total) }}</span>
+          </div>
+        </div>
+
+        <!-- GST Type -->
+        <div class="mt-4 space-y-1.5">
+          <label class="text-[10px] font-bold uppercase tracking-wider text-slate-400"
+            >GST Type</label
+          >
+          <select
+            [(ngModel)]="form.gst_type"
+            class="w-full bg-white border border-slate-200 rounded-sm px-2.5 py-2 text-[12px] text-slate-700 outline-none focus:border-indigo-400 transition-colors"
+          >
+            <option value="cgst_sgst">CGST + SGST</option>
+            <option value="igst">IGST</option>
+            <option value="exempt">Exempt</option>
+          </select>
+        </div>
+
+        <div class="mt-3 flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="reverse_charge"
+            [(ngModel)]="form.reverse_charge"
+            class="w-3.5 h-3.5 rounded-sm border-slate-300 text-indigo-600"
+          />
+          <label for="reverse_charge" class="text-[11px] text-slate-600 cursor-pointer"
+            >Reverse Charge Applicable</label
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

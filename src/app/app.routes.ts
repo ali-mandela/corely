@@ -78,6 +78,20 @@ export const routes: Routes = [
 
       { path: 'invoices', component: InvoicesListComponent, title: 'Invoices — Corely' },
       { path: 'invoices/new', component: InvoiceFormComponent, title: 'Create Invoice — Corely' },
+      {
+        path: 'invoices/:id/edit',
+        loadComponent: () =>
+          import('./features/invoices/invoice-edit/invoice-edit.component').then(
+            (m) => m.InvoiceEditComponent,
+          ),
+      },
+      {
+        path: 'invoices/:id/print',
+        loadComponent: () =>
+          import('./features/invoices/invoice-print/invoice-print.component').then(
+            (m) => m.InvoicePrintComponent,
+          ),
+      },
 
       { path: 'stores', component: StoresListComponent, title: 'Stores — Corely' },
       { path: 'stores/new', component: StoreFormComponent, title: 'New Store — Corely' },
