@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,11 +11,16 @@ import {
   ShoppingCart,
   CreditCard,
   X,
+  User,
+  Printer,
+  ChevronDown,
+  Check,
 } from 'lucide-angular';
 import { ApiService } from '../../../core/services/api.service';
 import { ToasterService } from '../../../shared/components/toaster/toaster.service';
 import { BadgeComponent } from '../../../shared/components/badge/badge';
 import { ButtonComponent } from '../../../shared/components/button/button';
+import { SaleReceiptComponent } from '../../../shared/components/sale-receipt/sale-receipt';
 import { InputComponent } from '../../../shared/components/input/input';
 import { SelectComponent, SelectOption } from '../../../shared/components/select/select';
 // import { ApiService } from '../../core/services/api.service';
@@ -49,10 +54,28 @@ interface SearchItem {
   sku?: string;
   hsn_code?: string;
   unit?: string;
+  pricing?: {
+    selling_price?: number;
+    mrp?: number;
+    tax_rate?: number;
+    hsn_code?: string;
+    discount_percent?: number;
+  };
+  stock?: {
+    current_stock?: number;
+  };
+  // Fallbacks for older/flatter data if any
   selling_price?: number;
   mrp?: number;
   gst_slab?: number;
   current_stock?: number;
+}
+
+interface Customer {
+  _id: string;
+  name: string;
+  phone?: string;
+  email?: string;
 }
 
 @Component({
@@ -66,7 +89,8 @@ interface SearchItem {
     ButtonComponent,
     InputComponent,
     SelectComponent,
-  ],
+    SaleReceiptComponent
+],
   templateUrl: './pos-billing.html',
   styles: [
     `
@@ -88,7 +112,7 @@ interface SearchItem {
     `,
   ],
 })
-export class PosBillingComponent {
+export class PosBillingComponent implements OnInit {
   readonly Search = Search;
   readonly Plus = Plus;
   readonly Minus = Minus;
@@ -96,12 +120,23 @@ export class PosBillingComponent {
   readonly ShoppingCart = ShoppingCart;
   readonly CreditCard = CreditCard;
   readonly X = X;
+  readonly User = User;
+  readonly Printer = Printer;
+  readonly ChevronDown = ChevronDown;
+  readonly Check = Check;
 
   // Search
   searchQuery = '';
   searchResults = signal<SearchItem[]>([]);
   searching = signal(false);
   showResults = signal(false);
+
+  // Customers
+  customers = signal<Customer[]>([]);
+  selectedCustomerId = signal<string | null>(null);
+  loadingCustomers = signal(false);
+  showCustomerDropdown = signal(false);
+  customerSearchQuery = signal('');
 
   // Cart
   cart = signal<CartItem[]>([]);
@@ -111,13 +146,15 @@ export class PosBillingComponent {
   customerPhone = '';
 
   // Bill-level discount
-  billDiscountType = 'flat';
-  billDiscountValue = 0;
+  billDiscountType = signal('flat');
+  billDiscountValue = signal(0);
 
   // Payment
   paymentMode = 'cash';
   amountReceived = 0;
   showPayment = signal(false);
+  showReceipt = signal(false);
+  lastCompletedSale = signal<any>(null);
   processing = signal(false);
 
   paymentOptions: SelectOption[] = [
@@ -149,10 +186,62 @@ export class PosBillingComponent {
     private router: Router,
   ) {}
 
+  ngOnInit(): void {
+    this.loadAvailableItems();
+    this.loadCustomers();
+  }
+
+  loadCustomers(): void {
+    this.loadingCustomers.set(true);
+    this.api.get<any>('/customers', { limit: 100 }).subscribe({
+      next: (r) => {
+        this.customers.set(r.data?.customers || []);
+        this.loadingCustomers.set(false);
+      },
+      error: () => this.loadingCustomers.set(false),
+    });
+  }
+
+  onCustomerSelect(c: Customer): void {
+    this.selectedCustomerId.set(c._id);
+    this.customerName = c.name;
+    this.customerPhone = c.phone || '';
+    this.showCustomerDropdown.set(false);
+  }
+
+  clearCustomer(): void {
+    this.selectedCustomerId.set(null);
+    this.customerName = '';
+    this.customerPhone = '';
+    this.showCustomerDropdown.set(false);
+  }
+
+  filteredCustomers = computed(() => {
+    const q = this.customerSearchQuery().toLowerCase();
+    if (!q) return this.customers();
+    return this.customers().filter((c) => c.name.toLowerCase().includes(q) || c.phone?.includes(q));
+  });
+
+  loadAvailableItems(): void {
+    this.searching.set(true);
+    // Fetch first 20 items to show in the gallery
+    this.api.get<any>('/items', { limit: 20 }).subscribe({
+      next: (r) => {
+        this.searchResults.set(r.data?.items || []);
+        this.searching.set(false);
+      },
+      error: () => this.searching.set(false),
+    });
+  }
+
   // ── Search ──
   onSearch(): void {
-    if (this.searchQuery.length < 2) {
+    if (this.searchQuery.trim().length === 0) {
+      this.loadAvailableItems();
       this.showResults.set(false);
+      return;
+    }
+    if (this.searchQuery.length < 2) {
       return;
     }
     this.searching.set(true);
@@ -171,23 +260,34 @@ export class PosBillingComponent {
     if (existing) {
       this.updateQty(existing, existing.quantity + 1);
     } else {
-      const price = item.selling_price || 0;
-      const gstRate = item.gst_slab || 18;
-      const gstAmt = +((price * gstRate) / 100).toFixed(2);
+      // Handle nested pricing
+      const price = item.pricing?.selling_price ?? item.selling_price ?? 0;
+      const gstRate = item.pricing?.tax_rate ?? item.gst_slab ?? 18;
+      const mrp = item.pricing?.mrp ?? item.mrp;
+      const hsn = item.pricing?.hsn_code ?? item.hsn_code;
+      const discPercent = item.pricing?.discount_percent ?? 0;
+
+      const baseAmount = price;
+      const discAmount = +((baseAmount * discPercent) / 100).toFixed(2);
+      const taxable = +(baseAmount - discAmount).toFixed(2);
+      const gstAmt = +((taxable * gstRate) / 100).toFixed(2);
+
       const newItem: CartItem = {
         item_id: item._id,
         item_name: item.name,
         sku: item.sku,
-        hsn_code: item.hsn_code,
+        hsn_code: hsn,
         quantity: 1,
         unit: item.unit || 'pcs',
         unit_price: price,
-        mrp: item.mrp,
+        mrp: mrp,
         gst_rate: gstRate,
-        discount_amount: 0,
+        discount_type: discPercent ? 'percent' : 'flat',
+        discount_value: discPercent || 0,
+        discount_amount: discAmount,
         gst_amount: gstAmt,
-        taxable_amount: price,
-        line_total: +(price + gstAmt).toFixed(2),
+        taxable_amount: taxable,
+        line_total: +(taxable + gstAmt).toFixed(2),
       };
       this.cart.update((c) => [...c, newItem]);
     }
@@ -201,11 +301,21 @@ export class PosBillingComponent {
     this.cart.update((c) =>
       c.map((i) => {
         if (i.item_id !== item.item_id) return i;
-        const taxable = +(i.unit_price * newQty - i.discount_amount).toFixed(2);
+        const baseAmount = i.unit_price * newQty;
+        let discAmt = i.discount_amount;
+
+        if (i.discount_type === 'percent' && i.discount_value) {
+          discAmt = +((baseAmount * i.discount_value) / 100).toFixed(2);
+        } else if (i.discount_type === 'flat' && i.discount_value) {
+          discAmt = i.discount_value;
+        }
+
+        const taxable = +(baseAmount - discAmt).toFixed(2);
         const gst = +((taxable * i.gst_rate) / 100).toFixed(2);
         return {
           ...i,
           quantity: newQty,
+          discount_amount: discAmt,
           taxable_amount: taxable,
           gst_amount: gst,
           line_total: +(taxable + gst).toFixed(2),
@@ -223,11 +333,13 @@ export class PosBillingComponent {
   }
 
   calcBillDiscount(): number {
-    if (!this.billDiscountValue) return 0;
-    if (this.billDiscountType === 'percentage') {
-      return +((this.subtotal() * this.billDiscountValue) / 100).toFixed(2);
+    const val = this.billDiscountValue();
+    if (!val) return 0;
+    if (this.billDiscountType() === 'percent') {
+      const fullBill = this.subtotal() + this.totalTax();
+      return +((fullBill * val) / 100).toFixed(2);
     }
-    return this.billDiscountValue;
+    return val;
   }
 
   formatCurrency(v: number): string {
@@ -253,6 +365,7 @@ export class PosBillingComponent {
     this.processing.set(true);
 
     const payload: any = {
+      customer_id: this.selectedCustomerId() || undefined,
       customer_name: this.customerName || undefined,
       customer_phone: this.customerPhone || undefined,
       items: this.cart().map((i) => ({
@@ -281,17 +394,29 @@ export class PosBillingComponent {
     };
 
     this.api.post('/pos/sales', payload).subscribe({
-      next: () => {
+      next: (r) => {
         this.toaster.success('Sale completed!');
-        this.cart.set([]);
-        this.customerName = '';
-        this.customerPhone = '';
-        this.billDiscountValue = 0;
-        this.showPayment.set(false);
-        this.processing.set(false);
+        this.lastCompletedSale.set(r.data);
+        this.showReceipt.set(true);
+        this.resetPOS();
       },
       error: () => this.processing.set(false),
     });
+  }
+
+  resetPOS(): void {
+    this.cart.set([]);
+    this.selectedCustomerId.set(null);
+    this.customerName = '';
+    this.customerPhone = '';
+    this.billDiscountValue.set(0);
+    this.showPayment.set(false);
+    this.processing.set(false);
+    this.customerSearchQuery.set('');
+  }
+
+  printReceipt(): void {
+    window.print();
   }
 
   holdSale(): void {

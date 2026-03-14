@@ -1,0 +1,98 @@
+<div class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/70 backdrop-blur-sm p-4 no-print">
+  <div class="bg-white rounded-sm shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col animate-in">
+    <!-- Header -->
+    <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+      <h3 class="text-[12px] font-black uppercase tracking-widest text-slate-900">Sale Slip</h3>
+      <button (click)="close.emit()" class="p-1 hover:bg-slate-50 rounded-sm">
+        <lucide-icon [name]="X" class="w-4 h-4 text-slate-400"></lucide-icon>
+      </button>
+    </div>
+
+    <!-- Receipt Content -->
+    <div class="flex-1 overflow-y-auto p-8 bg-white font-mono text-[11px] print:p-0">
+      <div class="text-center border-b-2 border-dashed border-slate-200 pb-4 mb-4">
+        <h2 class="text-lg font-black uppercase">CORELY POS</h2>
+        <p class="text-[9px] text-slate-400">Sale Receipt / Script</p>
+      </div>
+
+      <div class="flex justify-between mb-4">
+        <div>
+          <div class="font-bold">INV #{{ sale?.invoice_number || sale?._id?.slice(-8) }}</div>
+          <div class="text-slate-400">{{ (sale?.created_at || sale?.date) | date:'short' }}</div>
+        </div>
+        <div class="text-right" *ngIf="sale?.customer_name">
+          <div class="font-bold uppercase text-[9px] text-slate-400">Customer</div>
+          <div>{{ sale?.customer_name }}</div>
+          <div *ngIf="sale?.customer_phone" class="text-slate-400">{{ sale?.customer_phone }}</div>
+        </div>
+      </div>
+
+      <table class="w-full border-b-2 border-dashed border-slate-200 mb-4">
+        <thead>
+          <tr class="text-left text-[9px] text-slate-400 border-b border-slate-50">
+            <th class="py-2">ITEM</th>
+            <th class="py-2 text-center">QTY</th>
+            <th class="py-2 text-right">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of sale?.items" class="border-b border-slate-50 last:border-0">
+            <td class="py-2 pr-2">
+              <div class="font-bold">{{ item.item_name }}</div>
+              <div class="text-[9px] text-slate-400">@ {{ formatCurrency(item.unit_price) }}</div>
+            </td>
+            <td class="py-2 text-center">{{ item.quantity }}</td>
+            <td class="py-2 text-right">{{ formatCurrency(item.line_total) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="space-y-1 text-right">
+        <div class="flex justify-between">
+          <span class="text-slate-400 font-bold uppercase text-[9px]">Subtotal</span>
+          <span>{{ formatCurrency(sale?.subtotal) }}</span>
+        </div>
+        <div class="flex justify-between" *ngIf="sale?.total_tax > 0">
+          <span class="text-slate-400 font-bold uppercase text-[9px]">Taxes (GST)</span>
+          <span>{{ formatCurrency(sale?.total_tax) }}</span>
+        </div>
+        <div class="flex justify-between pt-3 border-t border-slate-100 font-black text-lg">
+          <span>GRAND TOTAL</span>
+          <span class="text-indigo-600">{{ formatCurrency(sale?.grand_total) }}</span>
+        </div>
+      </div>
+
+      <div class="mt-12 text-center pt-8 border-t border-dashed border-slate-100 italic text-slate-400">
+        Generated via Corely POS system
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="p-4 bg-slate-50 border-t border-slate-100 flex gap-3 no-print">
+      <button (click)="close.emit()" class="flex-1 py-2.5 border border-slate-200 rounded-sm text-[11px] font-bold text-slate-600 hover:bg-white shadow-sm">
+        Close
+      </button>
+      <button (click)="printReceipt()" class="flex-1 py-2.5 bg-indigo-600 text-white rounded-sm text-[11px] font-black hover:bg-indigo-700 flex items-center justify-center gap-2 shadow-lg shadow-indigo-50">
+        <lucide-icon [name]="Printer" class="w-4 h-4"></lucide-icon> Print Script
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Print-only version (optional backup if absolute positioning fails) -->
+<div class="hidden print:block font-mono text-[10px] p-4 bg-white" style="width: 80mm;">
+    <div class="text-center font-bold text-lg border-b mb-2 pb-2">CORELY POS</div>
+    <div class="mb-2">
+        <div>INV: {{ sale?.invoice_number || sale?._id?.slice(-8) }}</div>
+        <div>Date: {{ (sale?.created_at || sale?.date) | date:'short' }}</div>
+    </div>
+    <div class="border-b mb-2 pb-2">
+        <div *ngFor="let item of sale?.items" class="flex justify-between">
+            <span>{{ item.item_name }} x {{ item.quantity }}</span>
+            <span>{{ formatCurrency(item.line_total) }}</span>
+        </div>
+    </div>
+    <div class="text-right font-bold">
+        TOTAL: {{ formatCurrency(sale?.grand_total) }}
+    </div>
+</div>

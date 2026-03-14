@@ -1,11 +1,12 @@
 import { Component, Input, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-input',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './input.html',
   providers: [
     {
@@ -31,6 +32,7 @@ export class InputComponent implements ControlValueAccessor {
   @Input() readonly = false;
   @Input() disabled = false;
   @Input() required = false;
+  @Input() icon: any = null;
 
   value = '';
   focused = false;

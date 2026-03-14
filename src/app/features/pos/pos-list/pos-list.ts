@@ -2,9 +2,10 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Search, ChevronLeft, ChevronRight, Eye } from 'lucide-angular';
+import { LucideAngularModule, Search, ChevronLeft, ChevronRight, Eye, Printer } from 'lucide-angular';
 import { ApiService } from '../../../core/services/api.service';
 import { BadgeComponent } from '../../../shared/components/badge/badge';
+import { SaleReceiptComponent } from '../../../shared/components/sale-receipt/sale-receipt';
 
 interface Sale {
   _id: string;
@@ -19,7 +20,7 @@ interface Sale {
 @Component({
   selector: 'app-pos-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule, BadgeComponent],
+  imports: [CommonModule, FormsModule, RouterModule, LucideAngularModule, BadgeComponent, SaleReceiptComponent],
   templateUrl: './pos-list.html',
   styles: [
     `
@@ -47,6 +48,7 @@ export class PosListComponent implements OnInit {
   readonly ChevronLeft = ChevronLeft;
   readonly ChevronRight = ChevronRight;
   readonly Eye = Eye;
+  readonly Printer = Printer;
 
   sales = signal<Sale[]>([]);
   total = signal(0);
@@ -55,6 +57,9 @@ export class PosListComponent implements OnInit {
   statusFilter = '';
   limit = 20;
   offset = 0;
+
+  showReceipt = signal(false);
+  selectedSale = signal<any>(null);
 
   constructor(private api: ApiService) {}
   ngOnInit(): void {
@@ -123,5 +128,18 @@ export class PosListComponent implements OnInit {
   }
   get totalPages(): number {
     return Math.ceil(this.total() / this.limit);
+  }
+
+  openReceipt(sale: Sale): void {
+    // If we need the full sale details (items etc) which might not be in the list
+    // We fetch it by ID first to be safe
+    this.api.get<any>(`/pos/sales/${sale._id}`).subscribe({
+      next: (r) => {
+        if (r.success) {
+          this.selectedSale.set(r.data);
+          this.showReceipt.set(true);
+        }
+      },
+    });
   }
 }

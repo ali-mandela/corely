@@ -3,22 +3,31 @@
     {{ label }}
     <span *ngIf="required" class="text-red-400 ml-0.5">*</span>
   </label>
-  <input
-    [type]="type"
-    [value]="value"
-    [placeholder]="placeholder"
-    [readOnly]="readonly"
-    [disabled]="disabled"
-    (input)="onInput($event)"
-    (focus)="focused = true"
-    (blur)="onBlur()"
-    class="w-full bg-white border rounded-sm px-2.5 py-1.5 text-[12px] text-slate-700 outline-none transition-all duration-200 placeholder:text-slate-300"
-    [ngClass]="{
-      'border-red-300 focus:border-red-400': error,
-      'border-slate-200 focus:border-indigo-400': !error,
-      'bg-slate-50 text-slate-400 cursor-not-allowed': disabled || readonly,
-    }"
-  />
+  <div class="relative">
+    <div
+      *ngIf="icon"
+      class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400"
+    >
+      <lucide-icon [name]="icon" class="w-3.5 h-3.5"></lucide-icon>
+    </div>
+    <input
+      [type]="type"
+      [value]="value"
+      [placeholder]="placeholder"
+      [readOnly]="readonly"
+      [disabled]="disabled"
+      (input)="onInput($event)"
+      (focus)="focused = true"
+      (blur)="onBlur()"
+      class="w-full bg-white border rounded-sm px-2.5 py-1.5 text-[12px] text-slate-700 outline-none transition-all duration-200 placeholder:text-slate-300"
+      [class.pl-8]="icon"
+      [ngClass]="{
+        'border-red-300 focus:border-red-400': error,
+        'border-slate-200 focus:border-indigo-400': !error,
+        'bg-slate-50 text-slate-400 cursor-not-allowed': disabled || readonly,
+      }"
+    />
+  </div>
   <p *ngIf="error" class="text-[10px] text-red-500 font-medium">{{ error }}</p>
   <p *ngIf="hint && !error" class="text-[10px] text-slate-400">{{ hint }}</p>
 </div>

@@ -20,6 +20,15 @@ interface Product {
   gst_slab?: number;
 }
 
+interface Vendor {
+  _id: string;
+  name: string;
+  gstin?: string;
+  phone?: string;
+  email?: string;
+  state?: string;
+}
+
 interface LineItem {
   item_id: string;
   item_name: string;
@@ -104,6 +113,21 @@ export class PurchaseEntryFormComponent implements OnInit {
     { label: 'Credit', value: 'credit' },
   ];
 
+  // Vendor selection
+  vendors = signal<Vendor[]>([]);
+  vendorSearchQuery = signal('');
+  showVendorDropdown = signal(false);
+  loadingVendors = signal(false);
+  selectedVendorId = signal<string | null>(null);
+
+  filteredVendors = computed(() => {
+    const q = this.vendorSearchQuery().toLowerCase();
+    if (!q) return this.vendors();
+    return this.vendors().filter(
+      (v) => v.name.toLowerCase().includes(q) || v.phone?.includes(q),
+    );
+  });
+
   subtotal = computed(() => this.items().reduce((s, i) => s + i.unit_price * i.quantity, 0));
   totalGst = computed(() => this.items().reduce((s, i) => s + i.gst_amount, 0));
   grandTotal = computed(() => this.subtotal() + this.totalGst());
@@ -115,11 +139,46 @@ export class PurchaseEntryFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Load items
     this.api.get<any>('/items', { limit: 100 }).subscribe({
       next: (r) => {
         if (r.success) this.allItems.set(r.data?.items || []);
       },
     });
+
+    // Load vendors
+    this.loadVendors();
+  }
+
+  loadVendors(): void {
+    this.loadingVendors.set(true);
+    this.api.get<any>('/vendors', { limit: 50 }).subscribe({
+      next: (r) => {
+        if (r.success) this.vendors.set(r.data?.vendors || []);
+        this.loadingVendors.set(false);
+      },
+      error: () => this.loadingVendors.set(false),
+    });
+  }
+
+  onVendorSelect(v: Vendor): void {
+    this.selectedVendorId.set(v._id);
+    this.vendorSearchQuery.set(v.name);
+    this.supplier = {
+      name: v.name,
+      gstin: v.gstin || '',
+      phone: v.phone || '',
+      email: v.email || '',
+      state: v.state || '',
+    };
+    this.showVendorDropdown.set(false);
+  }
+
+  clearVendor(): void {
+    this.selectedVendorId.set(null);
+    this.vendorSearchQuery.set('');
+    this.supplier = { name: '', gstin: '', phone: '', email: '', state: '' };
+    this.showVendorDropdown.set(false);
   }
 
   emptyLine(): LineItem {
@@ -208,7 +267,10 @@ export class PurchaseEntryFormComponent implements OnInit {
     }
     this.saving.set(true);
     const payload = {
-      supplier: this.supplier,
+      supplier: {
+        ...this.supplier,
+        supplier_id: this.selectedVendorId() || undefined,
+      },
       invoice_number: this.invoiceNumber || undefined,
       challan_number: this.challanNumber || undefined,
       po_number: this.poNumber || undefined,
